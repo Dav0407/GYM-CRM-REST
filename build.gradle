@@ -1,0 +1,85 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.epam'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    springVersion = '6.2.2'
+    hibernateVersion = '6.4.4.Final'
+    jakartaPersistenceVersion = '3.1.0'
+    jakartaAnnotationVersion = '2.1.1'
+    postgresqlVersion = '42.7.3'
+    jacksonVersion = '2.18.3'
+    servletVersion = '6.0.0'
+    tomcatVersion = '10.1.39'
+    lombokVersion = '1.18.32'
+    envVersion = '3.0.0'
+    log4jVersion = '2.21.1'
+    junitBomVersion = '5.11.0'
+    assertjVersion = '3.25.1'
+    mockitoVersion = '5.11.0'
+}
+
+dependencies {
+    // Spring Dependencies
+    implementation group: 'org.springframework', name: 'spring-core', version: springVersion
+    implementation group: 'org.springframework', name: 'spring-context', version: springVersion
+    implementation group: 'org.springframework', name: 'spring-orm', version: springVersion
+    implementation group: 'org.springframework', name: 'spring-tx', version: springVersion
+    implementation group: 'org.springframework', name: 'spring-test', version: springVersion
+    implementation group: 'org.springframework', name: 'spring-webmvc', version: springVersion
+
+    //Servlet API
+    implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: servletVersion
+
+    // Jakarta annotations
+    implementation group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: jakartaAnnotationVersion
+
+    // Embedded Tomcat
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: tomcatVersion
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: tomcatVersion
+
+    // JSON processing
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jacksonVersion
+
+    // JPA and Hibernate
+    implementation group: 'jakarta.persistence', name: 'jakarta.persistence-api', version: jakartaPersistenceVersion
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: hibernateVersion
+
+    // PostgreSQL Driver
+    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion
+
+    // Lombok
+    implementation group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+
+    // Logging
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4jVersion
+
+    // JUnit & Testing
+    testImplementation platform(group: 'org.junit', name: 'junit-bom', version: junitBomVersion)
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: junitBomVersion
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: assertjVersion
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: mockitoVersion
+}
+
+test {
+    useJUnitPlatform()
+}
+
+application {
+    mainClass = 'com.example.Application'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add('-parameters')
+}
