@@ -5,6 +5,7 @@ import com.epam.gym_crm.dto.request.UpdateTraineeProfileRequestDTO;
 import com.epam.gym_crm.dto.response.TraineeResponseDTO;
 import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.User;
+import com.epam.gym_crm.mapper.TraineeMapper;
 import com.epam.gym_crm.repository.TraineeRepository;
 import com.epam.gym_crm.service.TraineeService;
 import com.epam.gym_crm.service.UserService;
@@ -22,6 +23,7 @@ public class TraineeServiceImpl implements TraineeService {
     private static final Log LOG = LogFactory.getLog(TraineeServiceImpl.class);
 
     private final TraineeRepository traineeRepository;
+    private final TraineeMapper traineeMapper;
     private final UserService userService;
 
     @Transactional
@@ -42,7 +44,7 @@ public class TraineeServiceImpl implements TraineeService {
         Trainee savedTrainee = traineeRepository.save(trainee);
 
         LOG.info("Trainee profile created successfully: " + savedTrainee.toString());
-        return getTraineeResponseDTO(trainee);
+        return getTraineeResponseDTO(savedTrainee);
     }
 
     @Override
@@ -99,6 +101,11 @@ public class TraineeServiceImpl implements TraineeService {
         userService.deleteUser(username);
     }
 
+    @Override
+    public TraineeResponseDTO getTraineeResponseDTO(Trainee trainee) {
+        return traineeMapper.toTraineeResponseDTO(trainee);
+    }
+
     private void validateRequest(CreateTraineeProfileRequestDTO request) {
         if (!StringUtils.hasText(request.getFirstName()) || !StringUtils.hasText(request.getLastName())) {
             throw new IllegalArgumentException("First name and last name cannot be empty");
@@ -109,19 +116,6 @@ public class TraineeServiceImpl implements TraineeService {
         if (request.getDateOfBirth() == null) {
             throw new IllegalArgumentException("Date of birth is required");
         }
-    }
-
-    public TraineeResponseDTO getTraineeResponseDTO(Trainee trainee) {
-        return TraineeResponseDTO.builder()
-                .id(trainee.getId())
-                .firstName(trainee.getUser().getFirstName())
-                .lastName(trainee.getUser().getLastName())
-                .username(trainee.getUser().getUsername())
-                .password(trainee.getUser().getPassword())
-                .isActive(trainee.getUser().getIsActive())
-                .birthDate(trainee.getDateOfBirth())
-                .address(trainee.getAddress())
-                .build();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.epam.gym_crm.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Getter
@@ -15,9 +17,17 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateTraineeProfileRequestDTO {
+public class CreateTraineeProfileRequestDTO implements Serializable {
+
+    @JsonProperty("firstName")
     private String firstName;
+
+    @JsonProperty("lastName")
     private String lastName;
+
+    @JsonProperty("dateOfBirth")
     private Date dateOfBirth;
+
+    @JsonProperty("address")
     private String address;
 }

@@ -20,6 +20,8 @@ ext {
     servletVersion = '6.0.0'
     tomcatVersion = '10.1.39'
     lombokVersion = '1.18.32'
+    mapstructVersion = '1.5.5.Final'
+    lombokMapstructBindingVersion = '0.2.0'
     envVersion = '3.0.0'
     log4jVersion = '2.21.1'
     junitBomVersion = '5.11.0'
@@ -61,6 +63,13 @@ dependencies {
     // Lombok
     implementation group: 'org.projectlombok', name: 'lombok', version: lombokVersion
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+
+    // MapStruct
+    implementation group: 'org.mapstruct', name: 'mapstruct', version: mapstructVersion
+    annotationProcessor group: 'org.mapstruct', name:'mapstruct-processor', version: mapstructVersion
+
+    // If using Lombok together with MapStruct, add this dependency
+    annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: lombokMapstructBindingVersion
 
     // Logging
     implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4jVersion

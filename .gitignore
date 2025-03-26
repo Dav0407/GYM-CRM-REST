@@ -43,3 +43,5 @@ bin/
 /.idea/.gitignore
 /.idea/gradle.xml
 /.idea/misc.xml
+/.idea/dataSources.xml
+/.idea/vcs.xml

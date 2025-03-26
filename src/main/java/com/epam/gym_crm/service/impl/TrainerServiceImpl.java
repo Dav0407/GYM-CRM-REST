@@ -5,6 +5,7 @@ import com.epam.gym_crm.dto.request.UpdateTrainerProfileRequestDTO;
 import com.epam.gym_crm.dto.response.TrainerResponseDTO;
 import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.entity.User;
+import com.epam.gym_crm.mapper.TrainerMapper;
 import com.epam.gym_crm.repository.TrainerRepository;
 import com.epam.gym_crm.service.TrainerService;
 import com.epam.gym_crm.service.TrainingTypeService;
@@ -24,8 +25,9 @@ public class TrainerServiceImpl implements TrainerService {
 
     private static final Log LOG = LogFactory.getLog(TrainerServiceImpl.class);
 
-    private final TrainerRepository trainerRepository;
     private final TrainingTypeService trainingTypeService;
+    private final TrainerRepository trainerRepository;
+    private final TrainerMapper trainerMapper;
     private final UserService userService;
 
     @Transactional
@@ -139,15 +141,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     public TrainerResponseDTO getTrainerResponseDTO(Trainer trainer) {
-        return TrainerResponseDTO.builder()
-                .id(trainer.getId())
-                .firstName(trainer.getUser().getFirstName())
-                .lastName(trainer.getUser().getLastName())
-                .username(trainer.getUser().getUsername())
-                .password(trainer.getUser().getPassword())
-                .isActive(trainer.getUser().getIsActive())
-                .specialization(trainer.getSpecialization().getTrainingTypeName())
-                .build();
+        return trainerMapper.toTrainerResponseDTO(trainer);
     }
 
     @Override
