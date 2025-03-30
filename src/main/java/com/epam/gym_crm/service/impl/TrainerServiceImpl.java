@@ -13,6 +13,7 @@ import com.epam.gym_crm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mapstruct.Named;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -140,6 +141,7 @@ public class TrainerServiceImpl implements TrainerService {
         }
     }
 
+    @Override
     public TrainerResponseDTO getTrainerResponseDTO(Trainer trainer) {
         return trainerMapper.toTrainerResponseDTO(trainer);
     }

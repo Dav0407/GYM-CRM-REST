@@ -1,6 +1,9 @@
 package com.epam.gym_crm.service_test;
 
+import com.epam.gym_crm.dto.response.UserResponseDTO;
 import com.epam.gym_crm.entity.User;
+import com.epam.gym_crm.exception.InvalidUserCredentialException;
+import com.epam.gym_crm.mapper.UserMapper;
 import com.epam.gym_crm.repository.UserRepository;
 import com.epam.gym_crm.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +31,9 @@ public class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private UserMapper userMapper;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -74,33 +80,47 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void testIsPasswordValid() {
+    void testValidateCredentials() {
         when(userRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
 
-        boolean isValid = userService.isPasswordValid("john.doe", "password123");
+        User user = userService.validateCredentials("john.doe", "password123");
 
-        assertTrue(isValid);
+        assertEquals("john.doe", user.getUsername());
+        assertEquals("password123", user.getPassword());
         verify(userRepository, times(1)).findByUsername("john.doe");
     }
 
     @Test
     void testIsPasswordInvalid() {
+
         when(userRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
 
-        boolean isValid = userService.isPasswordValid("john.doe", "wrongpassword");
+        assertThrows(InvalidUserCredentialException.class, () ->
+                userService.validateCredentials("john.doe", "wrongpassword"));
 
-        assertFalse(isValid);
         verify(userRepository, times(1)).findByUsername("john.doe");
     }
+
 
     @Test
     void testChangePassword() {
         when(userRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
 
-        userService.changePassword("john.doe", "password123", "newpassword");
+        UserResponseDTO expectedResponse = new UserResponseDTO();
+        expectedResponse.setUsername("john.doe");
 
-        verify(userRepository, times(1)).updatePassword("john.doe", "newpassword");
+        when(userMapper.toUserResponseDTO(user)).thenReturn(expectedResponse);
+
+        UserResponseDTO userResponseDTO = userService.changePassword("john.doe", "password123", "newpassword");
+
+        assertNotNull(userResponseDTO);
+        assertEquals("john.doe", userResponseDTO.getUsername());
+
+        assertEquals("newpassword", user.getPassword());
+
+        verify(userRepository, times(1)).findByUsername("john.doe");
     }
+
 
     @Test
     void testChangePasswordWithIncorrectOldPassword() {

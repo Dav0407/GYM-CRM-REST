@@ -2,6 +2,7 @@ package com.epam.gym_crm.service.impl;
 
 import com.epam.gym_crm.dto.request.CreateTraineeProfileRequestDTO;
 import com.epam.gym_crm.dto.request.UpdateTraineeProfileRequestDTO;
+import com.epam.gym_crm.dto.response.TraineeProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TraineeResponseDTO;
 import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.User;
@@ -58,15 +59,16 @@ public class TraineeServiceImpl implements TraineeService {
         return getTraineeResponseDTO(trainee);
     }
 
+    @Transactional
     @Override
-    public TraineeResponseDTO getTraineeByUsername(String username) {
+    public TraineeProfileResponseDTO getTraineeByUsername(String username) {
 
         User userByUsername = userService.getUserByUsername(username);
 
         Trainee trainee = traineeRepository.findByUserId(userByUsername.getId())
                 .orElseThrow(() -> new RuntimeException("Trainee not found with username: " + userByUsername.getUsername()));
 
-        return getTraineeResponseDTO(trainee);
+        return traineeMapper.toTraineeProfileResponseDTO(trainee);
     }
 
     @Override
@@ -101,11 +103,6 @@ public class TraineeServiceImpl implements TraineeService {
         userService.deleteUser(username);
     }
 
-    @Override
-    public TraineeResponseDTO getTraineeResponseDTO(Trainee trainee) {
-        return traineeMapper.toTraineeResponseDTO(trainee);
-    }
-
     private void validateRequest(CreateTraineeProfileRequestDTO request) {
         if (!StringUtils.hasText(request.getFirstName()) || !StringUtils.hasText(request.getLastName())) {
             throw new IllegalArgumentException("First name and last name cannot be empty");
@@ -116,6 +113,11 @@ public class TraineeServiceImpl implements TraineeService {
         if (request.getDateOfBirth() == null) {
             throw new IllegalArgumentException("Date of birth is required");
         }
+    }
+
+    @Override
+    public TraineeResponseDTO getTraineeResponseDTO(Trainee trainee) {
+        return traineeMapper.toTraineeResponseDTO(trainee);
     }
 
     @Override

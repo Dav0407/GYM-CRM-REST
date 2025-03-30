@@ -5,10 +5,11 @@ import org.mapstruct.Mapping;
 
 import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.dto.response.TrainerResponseDTO;
+import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface TrainerMapper {
-
+    @Named("toTrainerResponseDTO")
     @Mapping(source = "user.firstName", target = "firstName")
     @Mapping(source = "user.lastName", target = "lastName")
     @Mapping(source = "user.username", target = "username")

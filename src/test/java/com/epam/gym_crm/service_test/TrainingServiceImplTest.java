@@ -3,6 +3,7 @@ package com.epam.gym_crm.service_test;
 import com.epam.gym_crm.dto.request.AddTrainingRequestDTO;
 import com.epam.gym_crm.dto.request.GetTraineeTrainingsRequestDTO;
 import com.epam.gym_crm.dto.request.GetTrainerTrainingsRequestDTO;
+import com.epam.gym_crm.dto.response.TraineeProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TraineeResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerResponseDTO;
 import com.epam.gym_crm.dto.response.TrainingResponseDTO;
@@ -11,6 +12,7 @@ import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.entity.Training;
 import com.epam.gym_crm.entity.TrainingType;
 import com.epam.gym_crm.entity.User;
+import com.epam.gym_crm.mapper.TrainingMapper;
 import com.epam.gym_crm.repository.TrainingRepository;
 import com.epam.gym_crm.service.TraineeService;
 import com.epam.gym_crm.service.TraineeTrainerService;
@@ -34,9 +36,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @ExtendWith(MockitoExtension.class)
 class TrainingServiceImplTest {
@@ -56,12 +59,16 @@ class TrainingServiceImplTest {
     @Mock
     private TraineeTrainerService traineeTrainerService;
 
+    @Mock
+    private TrainingMapper trainingMapper;
+
     @InjectMocks
     private TrainingServiceImpl trainingService;
 
     private Trainee traineeEntity;
     private Trainer trainerEntity;
     private TraineeResponseDTO traineeResponseDTO;
+    private TraineeProfileResponseDTO traineeProfileResponseDTO;
     private TrainerResponseDTO trainerResponseDTO;
     private Training training;
     private TrainingType trainingType;
@@ -105,6 +112,10 @@ class TrainingServiceImplTest {
         traineeResponseDTO.setId(traineeEntity.getId());
         traineeResponseDTO.setUsername(traineeEntity.getUser().getUsername());
 
+        traineeProfileResponseDTO = new TraineeProfileResponseDTO();
+        traineeProfileResponseDTO.setId(traineeEntity.getId());
+        traineeProfileResponseDTO.setUsername(traineeEntity.getUser().getUsername());
+
         trainerResponseDTO = new TrainerResponseDTO();
         trainerResponseDTO.setId(trainerEntity.getId());
         trainerResponseDTO.setUsername(trainerEntity.getUser().getUsername());
@@ -118,12 +129,17 @@ class TrainingServiceImplTest {
         request.setFrom(new Date(System.currentTimeMillis() - 1000)); // Past date
         request.setTo(new Date());
 
+        TrainingResponseDTO mockTrainingResponseDTO = new TrainingResponseDTO();
+        mockTrainingResponseDTO.setId(1L);
+        mockTrainingResponseDTO.setTrainingName("Morning Run");
+        mockTrainingResponseDTO.setTrainingType("Cardio");
+
         when(trainingRepository.findAllTraineeTrainings(
                 "trainee.username", null, request.getFrom(), request.getTo(), null))
                 .thenReturn(Collections.singletonList(training));
 
-        when(traineeService.getTraineeResponseDTO(traineeEntity)).thenReturn(traineeResponseDTO);
-        when(trainerService.getTrainerResponseDTO(trainerEntity)).thenReturn(trainerResponseDTO);
+        when(trainingMapper.toTrainingResponseDTO(training))
+                .thenReturn(mockTrainingResponseDTO);
 
         // Act
         List<TrainingResponseDTO> result = trainingService.getTraineeTrainings(request);
@@ -137,6 +153,7 @@ class TrainingServiceImplTest {
 
         verify(trainingRepository, times(1)).findAllTraineeTrainings(
                 "trainee.username", null, request.getFrom(), request.getTo(), null);
+        verify(trainingMapper, times(1)).toTrainingResponseDTO(training);
     }
 
     @Test
@@ -179,8 +196,11 @@ class TrainingServiceImplTest {
                 "trainee.username", "trainer.username", null, null, null))
                 .thenReturn(Collections.singletonList(training));
 
-        when(traineeService.getTraineeResponseDTO(traineeEntity)).thenReturn(traineeResponseDTO);
-        when(trainerService.getTrainerResponseDTO(trainerEntity)).thenReturn(trainerResponseDTO);
+        TrainingResponseDTO mockTrainingResponseDTO = new TrainingResponseDTO();
+        mockTrainingResponseDTO.setId(1L);
+        mockTrainingResponseDTO.setTrainingName("Morning Run");
+        when(trainingMapper.toTrainingResponseDTO(training))
+                .thenReturn(mockTrainingResponseDTO);
 
         // Act
         List<TrainingResponseDTO> result = trainingService.getTraineeTrainings(request);
@@ -216,16 +236,18 @@ class TrainingServiceImplTest {
         request.setFrom(new Date(System.currentTimeMillis() - 1000)); // Past date
         request.setTo(new Date());
 
-        // Mock the trainerService to return a valid Trainer object
-        when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerResponseDTO);
+        TrainingResponseDTO mockTrainingResponseDTO = new TrainingResponseDTO();
+        mockTrainingResponseDTO.setId(1L);
+        mockTrainingResponseDTO.setTrainingName("Morning Run");
+        mockTrainingResponseDTO.setTrainingType("Cardio");
 
-        // Mock the trainingRepository to return a list of trainings
+        when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerResponseDTO);
         when(trainingRepository.findAllTrainerTrainings(
                 "trainer.username", null, request.getFrom(), request.getTo()))
                 .thenReturn(Collections.singletonList(training));
 
-        when(traineeService.getTraineeResponseDTO(traineeEntity)).thenReturn(traineeResponseDTO);
-        when(trainerService.getTrainerResponseDTO(trainerEntity)).thenReturn(trainerResponseDTO);
+        when(trainingMapper.toTrainingResponseDTO(training))
+                .thenReturn(mockTrainingResponseDTO);
 
         // Act
         List<TrainingResponseDTO> result = trainingService.getTrainerTrainings(request);
@@ -239,6 +261,7 @@ class TrainingServiceImplTest {
         verify(trainerService, times(1)).getTrainerByUsername("trainer.username");
         verify(trainingRepository, times(1)).findAllTrainerTrainings(
                 "trainer.username", null, request.getFrom(), request.getTo());
+        verify(trainingMapper, times(1)).toTrainingResponseDTO(training);
     }
 
     @Test
@@ -293,14 +316,17 @@ class TrainingServiceImplTest {
         request.setTraineeUsername("trainee.username");
 
         when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerResponseDTO);
-        when(traineeService.getTraineeByUsername("trainee.username")).thenReturn(traineeResponseDTO);
+        when(traineeService.getTraineeByUsername("trainee.username")).thenReturn(traineeProfileResponseDTO);
 
         when(trainingRepository.findAllTrainerTrainings(
                 "trainer.username", "trainee.username", null, null))
                 .thenReturn(Collections.singletonList(training));
 
-        when(traineeService.getTraineeResponseDTO(traineeEntity)).thenReturn(traineeResponseDTO);
-        when(trainerService.getTrainerResponseDTO(trainerEntity)).thenReturn(trainerResponseDTO);
+        TrainingResponseDTO mockTrainingResponseDTO = new TrainingResponseDTO();
+        mockTrainingResponseDTO.setId(1L);
+        mockTrainingResponseDTO.setTrainingName("Morning Run");
+        when(trainingMapper.toTrainingResponseDTO(training))
+                .thenReturn(mockTrainingResponseDTO);
 
         // Act
         List<TrainingResponseDTO> result = trainingService.getTrainerTrainings(request);
@@ -341,30 +367,59 @@ class TrainingServiceImplTest {
         request.setTrainingName("Morning Run");
         request.setTrainingTypeName("Cardio");
 
-        // Mock the necessary dependencies
+        // Create the training object that matches what will be passed to the mapper
+        Training trainingToMap = new Training();
+        trainingToMap.setTrainee(traineeEntity);
+        trainingToMap.setTrainer(trainerEntity);
+        trainingToMap.setTrainingType(trainingType);
+        trainingToMap.setTrainingDate(trainingDate);
+        trainingToMap.setTrainingDuration(60);
+        trainingToMap.setTrainingName("Morning Run");
+
+        TrainingResponseDTO mockTrainingResponseDTO = new TrainingResponseDTO();
+        mockTrainingResponseDTO.setId(1L);
+        mockTrainingResponseDTO.setTrainingName("Morning Run");
+        mockTrainingResponseDTO.setTrainingType("Cardio");
+
         when(traineeService.getTraineeEntityByUsername("trainee.username")).thenReturn(traineeEntity);
         when(trainerService.getTrainerEntityByUsername("trainer.username")).thenReturn(trainerEntity);
         when(trainingTypeService.findByValue("Cardio")).thenReturn(Optional.of(trainingType));
-        when(trainingRepository.save(any(Training.class))).thenReturn(training);
-        when(traineeService.getTraineeResponseDTO(traineeEntity)).thenReturn(traineeResponseDTO);
-        when(trainerService.getTrainerResponseDTO(trainerEntity)).thenReturn(trainerResponseDTO);
+
+        // Mock the save operation to return the training with ID
+        when(trainingRepository.save(any(Training.class))).thenAnswer(invocation -> {
+            Training t = invocation.getArgument(0);
+            Training saved = new Training();
+            saved.setId(1L); // Set the ID
+            saved.setTrainee(t.getTrainee());
+            saved.setTrainer(t.getTrainer());
+            saved.setTrainingType(t.getTrainingType());
+            saved.setTrainingDate(t.getTrainingDate());
+            saved.setTrainingDuration(t.getTrainingDuration());
+            saved.setTrainingName(t.getTrainingName());
+            return saved;
+        });
+
+        // Mock the mapper to expect the unsaved training (implementation passes the original training)
+        when(trainingMapper.toTrainingResponseDTO(argThat(t -> t.getId() == null)))
+                .thenReturn(mockTrainingResponseDTO);
 
         // Act
         TrainingResponseDTO result = trainingService.addTraining(request);
 
         // Assert
         assertNotNull(result);
+        assertEquals(1L, result.getId());
         assertEquals("Morning Run", result.getTrainingName());
         assertEquals("Cardio", result.getTrainingType());
 
         // Verify interactions
-        verify(traineeService, times(1)).getTraineeEntityByUsername("trainee.username");
-        verify(trainerService, times(1)).getTrainerEntityByUsername("trainer.username");
-        verify(trainingTypeService, times(1)).findByValue("Cardio");
-        verify(trainingRepository, times(1)).save(any(Training.class));
-        verify(traineeTrainerService, times(1)).createTraineeTrainer("trainee.username", "trainer.username");
+        verify(traineeService).getTraineeEntityByUsername("trainee.username");
+        verify(trainerService).getTrainerEntityByUsername("trainer.username");
+        verify(trainingTypeService).findByValue("Cardio");
+        verify(trainingRepository).save(any(Training.class));
+        verify(traineeTrainerService).createTraineeTrainer("trainee.username", "trainer.username");
+        verify(trainingMapper).toTrainingResponseDTO(argThat(t -> t.getId() == null));
     }
-
     @Test
     void testAddTraining_InvalidTraineeUsername() {
         // Arrange

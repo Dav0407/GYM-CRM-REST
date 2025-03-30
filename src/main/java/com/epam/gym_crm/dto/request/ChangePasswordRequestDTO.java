@@ -1,4 +1,4 @@
-package com.epam.gym_crm.dto.response;
+package com.epam.gym_crm.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +13,8 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponseDTO {
-    private Long id;
-    private String firstName;
-    private String lastName;
+public class ChangePasswordRequestDTO {
     private String username;
-    private String password;
-    private Boolean isActive;
+    private String oldPassword;
+    private String newPassword;
 }

@@ -2,6 +2,7 @@ package com.epam.gym_crm.service_test;
 
 import com.epam.gym_crm.dto.request.CreateTraineeProfileRequestDTO;
 import com.epam.gym_crm.dto.request.UpdateTraineeProfileRequestDTO;
+import com.epam.gym_crm.dto.response.TraineeProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TraineeResponseDTO;
 import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.User;
@@ -50,6 +51,7 @@ class TraineeServiceImplTest {
     private User user;
     private Trainee trainee;
     private TraineeResponseDTO traineeResponseDTO;
+    private TraineeProfileResponseDTO traineeProfileResponseDTO;
     private Date dateOfBirth;
 
     @BeforeEach
@@ -92,6 +94,16 @@ class TraineeServiceImplTest {
         traineeResponseDTO.setIsActive(true);
         traineeResponseDTO.setBirthDate(dateOfBirth);
         traineeResponseDTO.setAddress("123 Main St");
+
+        traineeProfileResponseDTO = new TraineeProfileResponseDTO();
+        traineeProfileResponseDTO.setId(1L);
+        traineeProfileResponseDTO.setFirstName("John");
+        traineeProfileResponseDTO.setLastName("Doe");
+        traineeProfileResponseDTO.setUsername("john.doe");
+        traineeProfileResponseDTO.setPassword("password");
+        traineeProfileResponseDTO.setIsActive(true);
+        traineeProfileResponseDTO.setBirthDate(dateOfBirth);
+        traineeProfileResponseDTO.setAddress("123 Main St");
     }
 
     @Test
@@ -151,9 +163,9 @@ class TraineeServiceImplTest {
     void testGetTraineeByUsername() {
         when(userService.getUserByUsername("john.doe")).thenReturn(user);
         when(traineeRepository.findByUserId(1L)).thenReturn(Optional.of(trainee));
-        when(traineeMapper.toTraineeResponseDTO(trainee)).thenReturn(traineeResponseDTO);
+        when(traineeMapper.toTraineeProfileResponseDTO(trainee)).thenReturn(traineeProfileResponseDTO);
 
-        TraineeResponseDTO response = traineeService.getTraineeByUsername("john.doe");
+        TraineeProfileResponseDTO response = traineeService.getTraineeByUsername("john.doe");
 
         assertNotNull(response);
         assertEquals("John", response.getFirstName());
@@ -165,7 +177,7 @@ class TraineeServiceImplTest {
 
         verify(userService, times(1)).getUserByUsername("john.doe");
         verify(traineeRepository, times(1)).findByUserId(1L);
-        verify(traineeMapper, times(1)).toTraineeResponseDTO(trainee);
+        verify(traineeMapper, times(1)).toTraineeProfileResponseDTO(trainee);
     }
 
     @Test

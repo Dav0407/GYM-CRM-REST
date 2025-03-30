@@ -16,7 +16,6 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
 
     private static final Log LOG = LogFactory.getLog(TrainingTypeServiceImpl.class);
 
-
     private final TrainingTypeRepository trainingTypeRepository;
 
     @Override

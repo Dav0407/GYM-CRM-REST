@@ -13,11 +13,10 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponseDTO {
+public class TrainerSecureResponseDTO {
     private Long id;
+    private String username;
     private String firstName;
     private String lastName;
-    private String username;
-    private String password;
-    private Boolean isActive;
+    private String specialization;
 }

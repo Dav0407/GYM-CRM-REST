@@ -6,6 +6,7 @@ import com.epam.gym_crm.dto.request.GetTrainerTrainingsRequestDTO;
 import com.epam.gym_crm.dto.response.TrainingResponseDTO;
 import com.epam.gym_crm.entity.Training;
 import com.epam.gym_crm.entity.TrainingType;
+import com.epam.gym_crm.mapper.TrainingMapper;
 import com.epam.gym_crm.repository.TrainingRepository;
 import com.epam.gym_crm.service.TraineeService;
 import com.epam.gym_crm.service.TraineeTrainerService;
@@ -34,6 +35,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     private final TrainingTypeService trainingTypeService;
     private final TraineeTrainerService traineeTrainerService;
+    private final TrainingMapper trainingMapper;
 
     @Override
     public List<TrainingResponseDTO> getTraineeTrainings(GetTraineeTrainingsRequestDTO request) {
@@ -171,15 +173,6 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     private TrainingResponseDTO getTrainingDTO(Training training) {
-        return TrainingResponseDTO.builder()
-                .id(training.getId())
-                .trainee(traineeService.getTraineeResponseDTO(training.getTrainee()))
-                .trainer(trainerService.getTrainerResponseDTO(training.getTrainer()))
-                .trainingName(training.getTrainingName())
-                .trainingType(training.getTrainingType().getTrainingTypeName())
-                .trainingDuration(training.getTrainingDuration())
-                .trainingDate(training.getTrainingDate())
-                .build();
-
+        return trainingMapper.toTrainingResponseDTO(training);
     }
 }

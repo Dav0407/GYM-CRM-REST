@@ -1,6 +1,7 @@
 package com.epam.gym_crm.controller;
 
 import com.epam.gym_crm.dto.request.CreateTraineeProfileRequestDTO;
+import com.epam.gym_crm.dto.response.TraineeProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TraineeResponseDTO;
 import com.epam.gym_crm.service.TraineeService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,17 +22,16 @@ public class TraineeController {
 
     private final TraineeService traineeService;
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TraineeResponseDTO> registerTrainee(@RequestBody CreateTraineeProfileRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.OK).body(traineeService.createTraineeProfile(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(traineeService.createTraineeProfile(request));
     }
 
-
-
-    @GetMapping()
-    public String trainee(){
-        return "trainee created";
+    @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TraineeProfileResponseDTO> getTraineeProfile(@PathVariable("username") String username) {
+        return ResponseEntity.status(HttpStatus.FOUND).body(traineeService.getTraineeByUsername(username));
     }
+
 }
 
 
