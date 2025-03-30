@@ -23,7 +23,8 @@ class UpdateTraineeProfileRequestDTOTest {
                 "Doe",
                 "john_doe",
                 dob,
-                "123 Main St"
+                "123 Main St",
+                true
         );
 
         assertThat(dto.getFirstName()).isEqualTo("John");
@@ -31,6 +32,7 @@ class UpdateTraineeProfileRequestDTOTest {
         assertThat(dto.getUsername()).isEqualTo("john_doe");
         assertThat(dto.getDateOfBirth()).isEqualTo(dob);
         assertThat(dto.getAddress()).isEqualTo("123 Main St");
+        assertThat(dto.getIsActive()).isEqualTo(true);
     }
 
     @Test
@@ -43,6 +45,7 @@ class UpdateTraineeProfileRequestDTOTest {
                 .username("alice_smith")
                 .dateOfBirth(dob)
                 .address("456 Elm St")
+                .isActive(true)
                 .build();
 
         assertThat(dto.getFirstName()).isEqualTo("Alice");
@@ -50,6 +53,7 @@ class UpdateTraineeProfileRequestDTOTest {
         assertThat(dto.getUsername()).isEqualTo("alice_smith");
         assertThat(dto.getDateOfBirth()).isEqualTo(dob);
         assertThat(dto.getAddress()).isEqualTo("456 Elm St");
+        assertThat(dto.getIsActive()).isEqualTo(true);
     }
 
     @Test
@@ -62,6 +66,7 @@ class UpdateTraineeProfileRequestDTOTest {
                 .username("charlie_brown")
                 .dateOfBirth(dob)
                 .address("789 Pine St")
+                .isActive(true)
                 .build();
 
         String dtoString = dto.toString();

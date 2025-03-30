@@ -18,7 +18,8 @@ class UpdateTrainerProfileRequestDTOTest {
                 "John",
                 "Doe",
                 "john_doe",
-                "Strength Training"
+                "Strength Training",
+                true
         );
 
         assertThat(dto.getFirstName()).isEqualTo("John");

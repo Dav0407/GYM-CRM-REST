@@ -5,6 +5,7 @@ import com.epam.gym_crm.dto.request.GetTraineeTrainingsRequestDTO;
 import com.epam.gym_crm.dto.request.GetTrainerTrainingsRequestDTO;
 import com.epam.gym_crm.dto.response.TraineeProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TraineeResponseDTO;
+import com.epam.gym_crm.dto.response.TrainerProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerResponseDTO;
 import com.epam.gym_crm.dto.response.TrainingResponseDTO;
 import com.epam.gym_crm.entity.Trainee;
@@ -69,6 +70,7 @@ class TrainingServiceImplTest {
     private Trainer trainerEntity;
     private TraineeResponseDTO traineeResponseDTO;
     private TraineeProfileResponseDTO traineeProfileResponseDTO;
+    private TrainerProfileResponseDTO trainerProfileResponseDTO;
     private TrainerResponseDTO trainerResponseDTO;
     private Training training;
     private TrainingType trainingType;
@@ -119,6 +121,10 @@ class TrainingServiceImplTest {
         trainerResponseDTO = new TrainerResponseDTO();
         trainerResponseDTO.setId(trainerEntity.getId());
         trainerResponseDTO.setUsername(trainerEntity.getUser().getUsername());
+
+        trainerProfileResponseDTO = new TrainerProfileResponseDTO();
+        trainerProfileResponseDTO.setId(trainerEntity.getId());
+        trainerProfileResponseDTO.setUsername(trainerEntity.getUser().getUsername());
     }
 
     @Test
@@ -191,7 +197,7 @@ class TrainingServiceImplTest {
         request.setTraineeUsername("trainee.username");
         request.setTrainerUsername("trainer.username");
 
-        when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerResponseDTO);
+        when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerProfileResponseDTO);
         when(trainingRepository.findAllTraineeTrainings(
                 "trainee.username", "trainer.username", null, null, null))
                 .thenReturn(Collections.singletonList(training));
@@ -241,7 +247,7 @@ class TrainingServiceImplTest {
         mockTrainingResponseDTO.setTrainingName("Morning Run");
         mockTrainingResponseDTO.setTrainingType("Cardio");
 
-        when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerResponseDTO);
+        when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerProfileResponseDTO);
         when(trainingRepository.findAllTrainerTrainings(
                 "trainer.username", null, request.getFrom(), request.getTo()))
                 .thenReturn(Collections.singletonList(training));
@@ -315,7 +321,7 @@ class TrainingServiceImplTest {
         request.setTrainerUsername("trainer.username");
         request.setTraineeUsername("trainee.username");
 
-        when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerResponseDTO);
+        when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerProfileResponseDTO);
         when(traineeService.getTraineeByUsername("trainee.username")).thenReturn(traineeProfileResponseDTO);
 
         when(trainingRepository.findAllTrainerTrainings(
@@ -344,7 +350,7 @@ class TrainingServiceImplTest {
         request.setTrainerUsername("trainer.username");
         request.setTraineeUsername("non.existent.trainee");
 
-        when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerResponseDTO);
+        when(trainerService.getTrainerByUsername("trainer.username")).thenReturn(trainerProfileResponseDTO);
         when(traineeService.getTraineeByUsername("non.existent.trainee")).thenReturn(null);
 
         // Act & Assert

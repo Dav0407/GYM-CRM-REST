@@ -193,20 +193,21 @@ class TraineeServiceImplTest {
 
     @Test
     void testUpdateTraineeProfile() {
-        when(traineeRepository.findById(1L)).thenReturn(Optional.of(trainee));
+        when(traineeRepository.findByUsername("jane.smith")).thenReturn(Optional.of(trainee));
 
         // Prepare an updated trainee response DTO
-        TraineeResponseDTO updatedResponseDTO = new TraineeResponseDTO();
+        TraineeProfileResponseDTO updatedResponseDTO = new TraineeProfileResponseDTO();
         updatedResponseDTO.setId(1L);
         updatedResponseDTO.setFirstName("Jane");
         updatedResponseDTO.setLastName("Smith");
         updatedResponseDTO.setUsername("jane.smith");
         updatedResponseDTO.setBirthDate(dateOfBirth);
         updatedResponseDTO.setAddress("456 Elm St");
+        updatedResponseDTO.setIsActive(true);
 
-        when(traineeMapper.toTraineeResponseDTO(trainee)).thenReturn(updatedResponseDTO);
+        when(traineeMapper.toTraineeProfileResponseDTO(trainee)).thenReturn(updatedResponseDTO);
 
-        TraineeResponseDTO response = traineeService.updateTraineeProfile(1L, updateRequest);
+        TraineeProfileResponseDTO response = traineeService.updateTraineeProfile(updateRequest);
 
         assertNotNull(response);
         assertEquals("Jane", response.getFirstName());
@@ -214,25 +215,31 @@ class TraineeServiceImplTest {
         assertEquals(dateOfBirth, response.getBirthDate());
         assertEquals("456 Elm St", response.getAddress());
 
-        verify(traineeRepository, times(1)).findById(1L);
-        verify(traineeMapper, times(1)).toTraineeResponseDTO(trainee);
+        verify(traineeRepository, times(1)).findByUsername("jane.smith");
+        verify(traineeMapper, times(1)).toTraineeProfileResponseDTO(trainee);
     }
 
     @Test
     void testUpdateTraineeProfile_NotFound() {
-        when(traineeRepository.findById(1L)).thenReturn(Optional.empty());
+        when(traineeRepository.findByUsername("jane.smith")).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> traineeService.updateTraineeProfile(1L, updateRequest));
+        assertThrows(RuntimeException.class, () -> traineeService.updateTraineeProfile(updateRequest));
 
-        verify(traineeRepository, times(1)).findById(1L);
+        verify(traineeRepository, times(1)).findByUsername("jane.smith");
     }
 
     @Test
     void testDeleteTraineeProfileByUsername() {
+
+        when(userService.getUserByUsername("john.doe")).thenReturn(user);
+        when(traineeRepository.findByUserId(1L)).thenReturn(Optional.of(trainee));
+        when(traineeMapper.toTraineeProfileResponseDTO(trainee)).thenReturn(traineeProfileResponseDTO);
+
         doNothing().when(userService).deleteUser("john.doe");
 
         traineeService.deleteTraineeProfileByUsername("john.doe");
 
         verify(userService, times(1)).deleteUser("john.doe");
     }
+
 }

@@ -54,10 +54,23 @@ public class TrainerRepositoryImpl implements TrainerRepository {
     public List<Trainer> findUnassignedTrainersByTraineeUsername(String traineeUsername) {
         return entityManager.createQuery(
                         "SELECT t FROM Trainer t WHERE t NOT IN " +
-                                "(SELECT tt.trainer FROM TraineeTrainer tt WHERE tt.trainee.user.username = :traineeUsername)",
+                                "(SELECT tt.trainer FROM TraineeTrainer tt WHERE tt.trainee.user.username = :traineeUsername) " +
+                                "AND t.user.isActive = true",
                         Trainer.class)
                 .setParameter("traineeUsername", traineeUsername)
                 .getResultList();
     }
+
+
+    @Override
+    public Optional<Trainer> findByUsername(String username) {
+        return entityManager.createQuery(
+                        "SELECT t FROM Trainer t WHERE t.user.username = :username", Trainer.class)
+                .setParameter("username", username)
+                .getResultList()
+                .stream()
+                .findFirst();
+    }
+
 }
 

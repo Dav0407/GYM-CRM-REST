@@ -2,7 +2,9 @@ package com.epam.gym_crm.service.impl;
 
 import com.epam.gym_crm.dto.request.CreateTrainerProfileRequestDTO;
 import com.epam.gym_crm.dto.request.UpdateTrainerProfileRequestDTO;
+import com.epam.gym_crm.dto.response.TrainerProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerResponseDTO;
+import com.epam.gym_crm.dto.response.TrainerSecureResponseDTO;
 import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.entity.User;
 import com.epam.gym_crm.mapper.TrainerMapper;
@@ -13,7 +15,6 @@ import com.epam.gym_crm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mapstruct.Named;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -63,15 +64,16 @@ public class TrainerServiceImpl implements TrainerService {
         return getTrainerResponseDTO(trainer);
     }
 
+    @Transactional
     @Override
-    public TrainerResponseDTO getTrainerByUsername(String username) {
+    public TrainerProfileResponseDTO getTrainerByUsername(String username) {
 
         User userByUsername = userService.getUserByUsername(username);
 
         Trainer trainer = trainerRepository.findByUserId(userByUsername.getId())
                 .orElseThrow(() -> new RuntimeException("Trainer not found with username: " + userByUsername.getUsername()));
 
-        return getTrainerResponseDTO(trainer);
+        return trainerMapper.toTrainerProfileResponseDTO(trainer);
     }
 
     @Override
@@ -84,10 +86,10 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Transactional
     @Override
-    public TrainerResponseDTO updateTrainerProfile(Long id, UpdateTrainerProfileRequestDTO request) {
+    public TrainerProfileResponseDTO updateTrainerProfile(UpdateTrainerProfileRequestDTO request) {
 
-        Trainer trainer = trainerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trainer not found with ID: " + id));
+        Trainer trainer = trainerRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("Trainer not found with username: " + request.getUsername()));
 
         trainer.getUser().setFirstName(request.getFirstName().trim());
         trainer.getUser().setLastName(request.getLastName().trim());
@@ -98,7 +100,11 @@ public class TrainerServiceImpl implements TrainerService {
                         .orElseThrow(() -> new RuntimeException("Training type not found: " + request.getTrainingTypeName())
                         ));
 
-        return getTrainerResponseDTO(trainer);
+        if (request.getIsActive() != trainer.getUser().getIsActive()) {
+            updateStatus(trainer.getUser().getUsername());
+        }
+
+        return trainerMapper.toTrainerProfileResponseDTO(trainer);
     }
 
     @Override
@@ -107,7 +113,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public List<TrainerResponseDTO> getNotAssignedTrainersByTraineeUsername(String traineeUsername) {
+    public List<TrainerSecureResponseDTO> getNotAssignedTrainersByTraineeUsername(String traineeUsername) {
         LOG.info("Fetching unassigned trainers for trainee: " + traineeUsername);
 
         // Validate input
@@ -118,9 +124,9 @@ public class TrainerServiceImpl implements TrainerService {
 
         try {
 
-            List<TrainerResponseDTO> unassignedTrainers = trainerRepository.findUnassignedTrainersByTraineeUsername(traineeUsername)
+            List<TrainerSecureResponseDTO> unassignedTrainers = trainerRepository.findUnassignedTrainersByTraineeUsername(traineeUsername)
                     .stream()
-                    .map(this::getTrainerResponseDTO)
+                    .map(trainerMapper::toTrainerSecureResponseDTO)
                     .toList();
 
             LOG.info("Found " + unassignedTrainers.size() + " unassigned trainers for trainee: " + traineeUsername);

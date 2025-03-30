@@ -21,4 +21,5 @@ public class UpdateTraineeProfileRequestDTO {
     private String username;
     private Date dateOfBirth;
     private String address;
+    private Boolean isActive;
 }

@@ -22,7 +22,6 @@ public interface TraineeMapper {
     @Mapping(source = "dateOfBirth", target = "birthDate")
     TraineeResponseDTO toTraineeResponseDTO(Trainee trainee);
 
-    @Named("toTraineeResponseDTO")
     @Mapping(source = "user.firstName", target = "firstName")
     @Mapping(source = "user.lastName", target = "lastName")
     @Mapping(source = "user.username", target = "username")

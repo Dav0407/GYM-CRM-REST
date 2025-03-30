@@ -2,7 +2,9 @@ package com.epam.gym_crm.service_test;
 
 import com.epam.gym_crm.dto.request.CreateTrainerProfileRequestDTO;
 import com.epam.gym_crm.dto.request.UpdateTrainerProfileRequestDTO;
+import com.epam.gym_crm.dto.response.TrainerProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerResponseDTO;
+import com.epam.gym_crm.dto.response.TrainerSecureResponseDTO;
 import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.entity.TrainingType;
 import com.epam.gym_crm.entity.User;
@@ -57,6 +59,8 @@ public class TrainerServiceImplTest {
     private Trainer trainer;
     private TrainingType trainingType;
     private TrainerResponseDTO trainerResponseDTO;
+    private TrainerProfileResponseDTO trainerProfileResponseDTO;
+    private TrainerSecureResponseDTO trainerSecureResponseDTO;
 
     @BeforeEach
     void setUp() {
@@ -95,6 +99,20 @@ public class TrainerServiceImplTest {
         trainerResponseDTO.setLastName("Doe");
         trainerResponseDTO.setUsername("john.doe");
         trainerResponseDTO.setSpecialization("Fitness");
+
+        trainerProfileResponseDTO = new TrainerProfileResponseDTO();
+        trainerProfileResponseDTO.setId(1L);
+        trainerProfileResponseDTO.setFirstName("Jane");
+        trainerProfileResponseDTO.setLastName("Smith");
+        trainerProfileResponseDTO.setUsername("jane.smith");
+        trainerProfileResponseDTO.setSpecialization("Yoga");
+
+        trainerSecureResponseDTO = new TrainerSecureResponseDTO();
+        trainerSecureResponseDTO.setId(1L);
+        trainerSecureResponseDTO.setFirstName("John");
+        trainerSecureResponseDTO.setLastName("Doe");
+        trainerSecureResponseDTO.setUsername("john.doe");
+        trainerSecureResponseDTO.setSpecialization("Fitness");
     }
 
     @Test
@@ -170,15 +188,15 @@ public class TrainerServiceImplTest {
         when(trainerRepository.findByUserId(1L)).thenReturn(Optional.of(trainer));
 
         // Mock the mapper
-        when(trainerMapper.toTrainerResponseDTO(trainer)).thenReturn(trainerResponseDTO);
+        when(trainerMapper.toTrainerProfileResponseDTO(trainer)).thenReturn(trainerProfileResponseDTO);
 
-        TrainerResponseDTO foundTrainer = trainerService.getTrainerByUsername("john.doe");
+        TrainerProfileResponseDTO foundTrainer = trainerService.getTrainerByUsername("john.doe");
 
         assertNotNull(foundTrainer);
         assertEquals(1L, foundTrainer.getId());
         verify(userService, times(1)).getUserByUsername("john.doe");
         verify(trainerRepository, times(1)).findByUserId(1L);
-        verify(trainerMapper, times(1)).toTrainerResponseDTO(trainer);
+        verify(trainerMapper, times(1)).toTrainerProfileResponseDTO(trainer);
     }
 
     @Test
@@ -194,36 +212,28 @@ public class TrainerServiceImplTest {
 
     @Test
     void testUpdateTrainerProfile() {
-        when(trainerRepository.findById(1L)).thenReturn(Optional.of(trainer));
+        when(trainerRepository.findByUsername("jane.smith")).thenReturn(Optional.of(trainer));
         when(trainingTypeService.findByValue("Yoga")).thenReturn(Optional.of(trainingType));
 
-        // Create an updated response DTO
-        TrainerResponseDTO updatedResponseDTO = new TrainerResponseDTO();
-        updatedResponseDTO.setId(1L);
-        updatedResponseDTO.setFirstName("Jane");
-        updatedResponseDTO.setLastName("Smith");
-        updatedResponseDTO.setSpecialization("Fitness");
+        when(trainerMapper.toTrainerProfileResponseDTO(trainer)).thenReturn(trainerProfileResponseDTO);
 
-        // Mock the mapper
-        when(trainerMapper.toTrainerResponseDTO(trainer)).thenReturn(updatedResponseDTO);
-
-        TrainerResponseDTO updatedTrainer = trainerService.updateTrainerProfile(1L, updateRequest);
+        TrainerProfileResponseDTO updatedTrainer = trainerService.updateTrainerProfile(updateRequest);
 
         assertNotNull(updatedTrainer);
         assertEquals("Jane", updatedTrainer.getFirstName());
-        assertEquals("Fitness", updatedTrainer.getSpecialization());
-        verify(trainerRepository, times(1)).findById(1L);
+        assertEquals("Yoga", updatedTrainer.getSpecialization());
+        verify(trainerRepository, times(1)).findByUsername("jane.smith");
         verify(trainingTypeService, times(1)).findByValue("Yoga");
-        verify(trainerMapper, times(1)).toTrainerResponseDTO(trainer);
+        verify(trainerMapper, times(1)).toTrainerProfileResponseDTO(trainer);
     }
 
     @Test
     void testUpdateTrainerProfileNotFound() {
-        when(trainerRepository.findById(1L)).thenReturn(Optional.empty());
+        when(trainerRepository.findByUsername("jane.smith")).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> trainerService.updateTrainerProfile(1L, updateRequest));
+        assertThrows(RuntimeException.class, () -> trainerService.updateTrainerProfile( updateRequest));
 
-        verify(trainerRepository, times(1)).findById(1L);
+        verify(trainerRepository, times(1)).findByUsername("jane.smith");
         verify(trainingTypeService, never()).findByValue(anyString());
         verify(trainerRepository, never()).save(any(Trainer.class));
     }
@@ -242,14 +252,14 @@ public class TrainerServiceImplTest {
         when(trainerRepository.findUnassignedTrainersByTraineeUsername("trainee1")).thenReturn(List.of(trainer));
 
         // Mock the mapper for the list
-        when(trainerMapper.toTrainerResponseDTO(trainer)).thenReturn(trainerResponseDTO);
+        when(trainerMapper.toTrainerSecureResponseDTO(trainer)).thenReturn(trainerSecureResponseDTO);
 
-        List<TrainerResponseDTO> unassignedTrainers = trainerService.getNotAssignedTrainersByTraineeUsername("trainee1");
+        List<TrainerSecureResponseDTO> unassignedTrainers = trainerService.getNotAssignedTrainersByTraineeUsername("trainee1");
 
         assertNotNull(unassignedTrainers);
         assertEquals(1, unassignedTrainers.size());
         verify(trainerRepository, times(1)).findUnassignedTrainersByTraineeUsername("trainee1");
-        verify(trainerMapper, times(1)).toTrainerResponseDTO(trainer);
+        verify(trainerMapper, times(1)).toTrainerSecureResponseDTO(trainer);
     }
 
     @Test

@@ -11,4 +11,5 @@ public interface TrainerRepository {
     List<Trainer> findAll();
     Optional<Trainer> findByUserId(Long id);
     List<Trainer> findUnassignedTrainersByTraineeUsername(String traineeUsername);
+    Optional<Trainer> findByUsername(String username);
 }

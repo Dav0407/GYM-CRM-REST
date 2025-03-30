@@ -8,4 +8,5 @@ public interface TraineeRepository {
     Trainee save(Trainee trainee);
     Optional<Trainee> findById(Long id);
     Optional<Trainee> findByUserId(Long userId);
+    Optional<Trainee> findByUsername(String email);
 }

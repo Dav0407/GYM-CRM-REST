@@ -81,16 +81,16 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Transactional
     @Override
-    public TraineeResponseDTO updateTraineeProfile(Long id, UpdateTraineeProfileRequestDTO request) {
-        Trainee trainee = traineeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trainee not found with ID: " + id));
+    public TraineeProfileResponseDTO updateTraineeProfile(UpdateTraineeProfileRequestDTO request) {
+        Trainee trainee = traineeRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("Trainee not found with username: " + request.getUsername()));
 
         trainee.getUser().setFirstName(request.getFirstName().trim());
         trainee.getUser().setLastName(request.getLastName().trim());
         trainee.setDateOfBirth(request.getDateOfBirth());
         trainee.setAddress(request.getAddress().trim());
 
-        return getTraineeResponseDTO(trainee);
+        return traineeMapper.toTraineeProfileResponseDTO(trainee);
     }
 
     @Override
@@ -98,9 +98,12 @@ public class TraineeServiceImpl implements TraineeService {
         userService.updateStatus(username);
     }
 
+    @Transactional
     @Override
-    public void deleteTraineeProfileByUsername(String username) {
+    public TraineeProfileResponseDTO deleteTraineeProfileByUsername(String username) {
+        TraineeProfileResponseDTO traineeByUsername = getTraineeByUsername(username);
         userService.deleteUser(username);
+        return traineeByUsername;
     }
 
     private void validateRequest(CreateTraineeProfileRequestDTO request) {

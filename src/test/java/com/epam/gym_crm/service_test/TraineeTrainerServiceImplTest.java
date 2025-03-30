@@ -1,9 +1,11 @@
 package com.epam.gym_crm.service_test;
 
+import com.epam.gym_crm.dto.response.TrainerSecureResponseDTO;
 import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.TraineeTrainer;
 import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.entity.User;
+import com.epam.gym_crm.mapper.TrainerMapper;
 import com.epam.gym_crm.repository.TraineeTrainerRepository;
 import com.epam.gym_crm.service.TraineeService;
 import com.epam.gym_crm.service.TrainerService;
@@ -39,6 +41,9 @@ class TraineeTrainerServiceImplTest {
 
     @Mock
     private TrainerService trainerService;
+
+    @Mock
+    private TrainerMapper trainerMapper;
 
     @InjectMocks
     private TraineeTrainerServiceImpl traineeTrainerService;
@@ -141,17 +146,29 @@ class TraineeTrainerServiceImplTest {
 
     @Test
     void testUpdateTraineeTrainers_Success() {
+
+        List<TraineeTrainer> existingRelations = Collections.singletonList(traineeTrainer);
+
+        TrainerSecureResponseDTO trainerResponseDTO = new TrainerSecureResponseDTO();
+
         when(traineeService.getTraineeEntityByUsername("trainee.username")).thenReturn(trainee);
         when(trainerService.getTrainerEntityByUsername("trainer.username")).thenReturn(trainer);
-        when(traineeTrainerRepository.findAllByTraineeUsername("trainee.username")).thenReturn(Collections.emptyList());
+        when(traineeTrainerRepository.findAllByTraineeUsername("trainee.username")).thenReturn(existingRelations);
+        when(trainerMapper.toTrainerSecureResponseDTO(trainer)).thenReturn(trainerResponseDTO);
 
-        traineeTrainerService.updateTraineeTrainers("trainee.username", Collections.singletonList("trainer.username"));
+        List<TrainerSecureResponseDTO> result = traineeTrainerService.updateTraineeTrainers("trainee.username",
+                Collections.singletonList("trainer.username"));
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(trainerResponseDTO, result.get(0));
 
         verify(traineeService, times(1)).getTraineeEntityByUsername("trainee.username");
         verify(trainerService, times(1)).getTrainerEntityByUsername("trainer.username");
         verify(traineeTrainerRepository, times(1)).findAllByTraineeUsername("trainee.username");
-        verify(traineeTrainerRepository, times(1)).deleteAll(Collections.emptyList());
+        verify(traineeTrainerRepository, times(1)).deleteAll(existingRelations);
         verify(traineeTrainerRepository, times(1)).saveAll(any());
+        verify(trainerMapper, times(1)).toTrainerSecureResponseDTO(trainer);
     }
 
     @Test

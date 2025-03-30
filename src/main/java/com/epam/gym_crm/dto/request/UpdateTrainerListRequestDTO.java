@@ -7,16 +7,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateTrainerProfileRequestDTO {
-    private String firstName;
-    private String lastName;
-    private String username;
-    private String trainingTypeName;
-    private Boolean isActive;
+public class UpdateTrainerListRequestDTO {
+    private String traineeUsername;
+    private List<String> trainerUsernames;
 }

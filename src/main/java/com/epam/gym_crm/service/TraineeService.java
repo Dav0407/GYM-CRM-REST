@@ -11,8 +11,8 @@ public interface TraineeService extends UserCreationService{
     TraineeResponseDTO getTraineeById(Long id);
     TraineeProfileResponseDTO getTraineeByUsername(String username);
     Trainee getTraineeEntityByUsername(String username);
-    TraineeResponseDTO updateTraineeProfile(Long id, UpdateTraineeProfileRequestDTO request);
+    TraineeProfileResponseDTO updateTraineeProfile(UpdateTraineeProfileRequestDTO request);
     void updateStatus(String username);
-    void deleteTraineeProfileByUsername(String username);
+    TraineeProfileResponseDTO deleteTraineeProfileByUsername(String username);
     TraineeResponseDTO getTraineeResponseDTO(Trainee trainee);
 }

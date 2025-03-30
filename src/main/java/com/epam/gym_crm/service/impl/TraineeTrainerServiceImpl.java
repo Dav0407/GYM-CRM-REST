@@ -1,8 +1,10 @@
 package com.epam.gym_crm.service.impl;
 
+import com.epam.gym_crm.dto.response.TrainerSecureResponseDTO;
 import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.TraineeTrainer;
 import com.epam.gym_crm.entity.Trainer;
+import com.epam.gym_crm.mapper.TrainerMapper;
 import com.epam.gym_crm.repository.TraineeTrainerRepository;
 import com.epam.gym_crm.service.TraineeService;
 import com.epam.gym_crm.service.TraineeTrainerService;
@@ -24,6 +26,7 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
     private static final Log LOG = LogFactory.getLog(TraineeTrainerServiceImpl.class);
 
     private final TraineeTrainerRepository traineeTrainerRepository;
+    private final TrainerMapper trainerMapper;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
 
@@ -73,7 +76,7 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
 
     @Override
     @Transactional
-    public void updateTraineeTrainers(String traineeUsername, List<String> trainerUsernames) {
+    public List<TrainerSecureResponseDTO> updateTraineeTrainers(String traineeUsername, List<String> trainerUsernames) {
         // Validate inputs
         if (traineeUsername == null || traineeUsername.isBlank()) {
             throw new IllegalArgumentException("Trainee username cannot be null or empty.");
@@ -113,6 +116,12 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
 
         traineeTrainerRepository.saveAll(newRelations);
         LOG.info("Added " + newRelations.size() + " new trainers for trainee " + traineeUsername);
+
+        return newRelations.stream()
+                .filter(traineeTrainer -> traineeTrainer.getTrainee().equals(trainee))
+                .map(TraineeTrainer::getTrainer)
+                .map(trainerMapper::toTrainerSecureResponseDTO)
+                .toList();
     }
 
 }
