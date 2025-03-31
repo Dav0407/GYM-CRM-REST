@@ -25,7 +25,6 @@ ext {
     lombokVersion = '1.18.32'
     mapstructVersion = '1.5.5.Final'
     lombokMapstructBindingVersion = '0.2.0'
-    envVersion = '3.0.0'
     log4jVersion = '2.21.1'
     swaggerVersion = '3.0.0'
     junitBomVersion = '5.11.0'
@@ -89,9 +88,8 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
 
     //Swagger
-    implementation group: 'io.springfox', name: 'springfox-swagger2', version: swaggerVersion
-    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: swaggerVersion
-    implementation group: 'io.springfox', name: 'springfox-spring-webmvc', version: swaggerVersion
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-webmvc-core', version: '1.8.0'
+    implementation group: 'org.webjars', name: 'swagger-ui', version: '5.20.1'
 
     // JUnit & Testing
     testImplementation platform(group: 'org.junit', name: 'junit-bom', version: junitBomVersion)
