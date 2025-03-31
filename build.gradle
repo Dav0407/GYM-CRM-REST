@@ -14,6 +14,9 @@ ext {
     springVersion = '6.2.2'
     hibernateVersion = '6.4.4.Final'
     jakartaPersistenceVersion = '3.1.0'
+    jakartaValidationVersion = '3.0.2'
+    hibernateValidatorVersion = '8.0.0.Final'
+    elVersion = '4.0.2'
     jakartaAnnotationVersion = '2.1.1'
     postgresqlVersion = '42.7.3'
     jacksonVersion = '2.18.3'
@@ -57,6 +60,11 @@ dependencies {
     implementation group: 'jakarta.persistence', name: 'jakarta.persistence-api', version: jakartaPersistenceVersion
     implementation group: 'org.hibernate', name: 'hibernate-core', version: hibernateVersion
 
+    // Validation
+    implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: hibernateValidatorVersion
+    implementation group: 'jakarta.validation', name: 'jakarta.validation-api', version: jakartaValidationVersion
+    implementation group: 'org.glassfish', name: 'jakarta.el', version: elVersion
+
     // PostgreSQL Driver
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion
 
@@ -66,13 +74,15 @@ dependencies {
 
     // MapStruct
     implementation group: 'org.mapstruct', name: 'mapstruct', version: mapstructVersion
-    annotationProcessor group: 'org.mapstruct', name:'mapstruct-processor', version: mapstructVersion
+    annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion
 
     // If using Lombok together with MapStruct, add this dependency
     annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: lombokMapstructBindingVersion
 
     // Logging
     implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4jVersion
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
 
     // JUnit & Testing
     testImplementation platform(group: 'org.junit', name: 'junit-bom', version: junitBomVersion)

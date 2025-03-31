@@ -10,8 +10,8 @@ import com.epam.gym_crm.service.TraineeService;
 import com.epam.gym_crm.service.TraineeTrainerService;
 import com.epam.gym_crm.service.TrainerService;
 import lombok.AllArgsConstructor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +23,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TraineeTrainerServiceImpl implements TraineeTrainerService {
 
-    private static final Log LOG = LogFactory.getLog(TraineeTrainerServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(TraineeTrainerServiceImpl.class);
 
     private final TraineeTrainerRepository traineeTrainerRepository;
     private final TrainerMapper trainerMapper;
@@ -33,7 +33,7 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
     @Override
     @Transactional
     public TraineeTrainer createTraineeTrainer(String traineeUsername, String trainerUsername) {
-        LOG.info("Attempting to create a trainee-trainer relationship: Trainee = " + traineeUsername + ", Trainer = " + trainerUsername);
+        LOG.info("Attempting to create a trainee-trainer relationship: Trainee = {}, Trainer = {}", traineeUsername, trainerUsername);
 
         // Validate input
         if (traineeUsername == null || traineeUsername.trim().isEmpty()) {
@@ -52,7 +52,7 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
         // Check if relationship already exists
         Optional<TraineeTrainer> existingRelation = traineeTrainerRepository.findByTraineeAndTrainer(trainee, trainer);
         if (existingRelation.isPresent()) {
-            LOG.warn("Trainee-Trainer relationship already exists between " + traineeUsername + " and " + trainerUsername);
+            LOG.warn("Trainee-Trainer relationship already exists between {} and {}", traineeUsername, trainerUsername);
             return existingRelation.get();
         }
 
@@ -63,14 +63,14 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
                 .build();
 
         TraineeTrainer savedTraineeTrainer = traineeTrainerRepository.save(traineeTrainer);
-        LOG.info("Successfully created Trainee-Trainer relationship with ID: " + savedTraineeTrainer.getId());
+        LOG.info("Successfully created Trainee-Trainer relationship with ID: {}", savedTraineeTrainer.getId());
 
         return savedTraineeTrainer;
     }
 
     @Override
     public List<TraineeTrainer> findByTraineeUsername(String traineeUsername) {
-        LOG.info("Fetching trainee-trainer relationships for trainee: " + traineeUsername);
+        LOG.info("Fetching trainee-trainer relationships for trainee: {}", traineeUsername);
         return traineeTrainerRepository.findAllByTraineeUsername(traineeUsername);
     }
 
@@ -86,7 +86,7 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
             throw new IllegalArgumentException("Trainer usernames list cannot be null.");
         }
 
-        LOG.info("Updating trainers list for trainee: {}" + traineeUsername);
+        LOG.info("Updating trainers list for trainee: {}", traineeUsername);
 
         // Fetch the trainee
         Trainee trainee = traineeService.getTraineeEntityByUsername(traineeUsername);
@@ -97,13 +97,13 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
         // Remove existing trainer relationships
         List<TraineeTrainer> existingRelations = traineeTrainerRepository.findAllByTraineeUsername(traineeUsername);
         traineeTrainerRepository.deleteAll(existingRelations);
-        LOG.info("Removed " + existingRelations.size() + " existing trainer relations for trainee " + traineeUsername);
+        LOG.info("Removed {} existing trainer relations for trainee {}", existingRelations.size(), traineeUsername);
         // Add new trainer relationships
         List<TraineeTrainer> newRelations = trainerUsernames.stream()
                 .map(trainerUsername -> {
                     Trainer trainer = trainerService.getTrainerEntityByUsername(trainerUsername);
                     if (trainer == null) {
-                        LOG.warn("Trainer not found: {}" + trainerUsername);
+                        LOG.warn("Trainer not found: {}", trainerUsername);
                         return null;
                     }
                     return TraineeTrainer.builder()
@@ -115,7 +115,7 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
                 .toList();
 
         traineeTrainerRepository.saveAll(newRelations);
-        LOG.info("Added " + newRelations.size() + " new trainers for trainee " + traineeUsername);
+        LOG.info("Added {} new trainers for trainee {}", newRelations.size(), traineeUsername);
 
         return newRelations.stream()
                 .filter(traineeTrainer -> traineeTrainer.getTrainee().equals(trainee))

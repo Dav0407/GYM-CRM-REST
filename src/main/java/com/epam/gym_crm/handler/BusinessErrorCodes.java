@@ -1,0 +1,36 @@
+package com.epam.gym_crm.handler;
+
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
+@Getter
+public enum BusinessErrorCodes {
+
+    USER_UNAUTHORIZED(401, UNAUTHORIZED, "User data not found"),
+    INTERNAL_ERROR(500, INTERNAL_SERVER_ERROR, "Something went wrong in the server side, it is not you."),
+    USER_HAS_ACCOUNT(409, CONFLICT, "User has account"),
+    NO_TRAINING(204, NO_CONTENT, "Training does not exist"),
+    NO_TRAINING_TYPE(204, NO_CONTENT, "Training type does not exist"),
+    USER_NOT_FOUND(404, NOT_FOUND, "User with these credentials does not exist"),
+    VALIDATION_FAILED(400, BAD_REQUEST, "Validation failed");
+
+    private final int code;
+
+    private final HttpStatus httpStatus;
+
+    private final String description;
+
+    BusinessErrorCodes(int code, HttpStatus httpStatus, String description) {
+        this.code = code;
+        this.httpStatus = httpStatus;
+        this.description = description;
+    }
+
+}

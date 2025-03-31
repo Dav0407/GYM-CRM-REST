@@ -11,8 +11,8 @@ import com.epam.gym_crm.repository.TraineeRepository;
 import com.epam.gym_crm.service.TraineeService;
 import com.epam.gym_crm.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -21,7 +21,7 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class TraineeServiceImpl implements TraineeService {
 
-    private static final Log LOG = LogFactory.getLog(TraineeServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(TraineeServiceImpl.class);
 
     private final TraineeRepository traineeRepository;
     private final TraineeMapper traineeMapper;
@@ -30,7 +30,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Transactional
     @Override
     public TraineeResponseDTO createTraineeProfile(CreateTraineeProfileRequestDTO request) {
-        LOG.info("Creating new trainee profile for: " + request.getFirstName() + " " + request.getLastName());
+        LOG.info("Creating new trainee profile for: {} {}", request.getFirstName(), request.getLastName());
 
         validateRequest(request);
 
@@ -44,14 +44,14 @@ public class TraineeServiceImpl implements TraineeService {
 
         Trainee savedTrainee = traineeRepository.save(trainee);
 
-        LOG.info("Trainee profile created successfully: " + savedTrainee.toString());
+        LOG.info("Trainee profile created successfully: {}", savedTrainee.toString());
         return getTraineeResponseDTO(savedTrainee);
     }
 
     @Override
     public TraineeResponseDTO getTraineeById(Long id) {
 
-        LOG.info("Fetching trainee by ID: " + id);
+        LOG.info("Fetching trainee by ID: {}", id);
 
         Trainee trainee = traineeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Trainee not found with ID: " + id));

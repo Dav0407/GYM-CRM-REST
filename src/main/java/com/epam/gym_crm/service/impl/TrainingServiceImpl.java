@@ -16,8 +16,8 @@ import com.epam.gym_crm.service.TrainerService;
 import com.epam.gym_crm.service.TrainingService;
 import com.epam.gym_crm.service.TrainingTypeService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -28,7 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
 
-    private static final Log LOG = LogFactory.getLog(TrainingServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(TrainingServiceImpl.class);
 
     private final TrainingRepository trainingRepository;
 
@@ -41,7 +41,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public List<TraineeTrainingResponseDTO> getTraineeTrainings(GetTraineeTrainingsRequestDTO request) {
-        LOG.info("Fetching trainings for trainee: {}" + request.getTraineeUsername());
+        LOG.info("Fetching trainings for trainee: {}", request.getTraineeUsername());
 
         // Validate trainee username
         String traineeUsername = Optional.ofNullable(request.getTraineeUsername())
@@ -51,7 +51,7 @@ public class TrainingServiceImpl implements TrainingService {
 
         // Validate date range
         if (request.getFrom() != null && request.getTo() != null && request.getFrom().after(request.getTo())) {
-            LOG.error("Invalid date range: 'from' date is after 'to' date.");
+            LOG.error("Invalid date range: 'from' date is after 'to' date. ");
             throw new IllegalArgumentException("Invalid date range: 'from' date cannot be after 'to' date.");
         }
 
@@ -71,7 +71,7 @@ public class TrainingServiceImpl implements TrainingService {
                 .map(trainingMapper::toTraineeTrainingResponseDTO)
                 .toList();
 
-        LOG.info("Found " + trainings.size() + " trainings for trainee: " + traineeUsername);
+        LOG.info("Found {} trainings for trainee: {}", trainings.size(), traineeUsername);
 
         return trainings;
     }
@@ -79,7 +79,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public List<TrainerTrainingResponseDTO> getTrainerTrainings(GetTrainerTrainingsRequestDTO request) {
-        LOG.info("Fetching trainings for trainer: {}" + request.getTrainerUsername());
+        LOG.info("Fetching trainings for trainer: {}", request.getTrainerUsername());
 
         // Validate trainer username
         String trainerUsername = Optional.ofNullable(request.getTrainerUsername())
@@ -114,7 +114,7 @@ public class TrainingServiceImpl implements TrainingService {
                 .map(trainingMapper::toTrainerTrainingResponseDTO)
                 .toList();
 
-        LOG.info("Found " + trainings.size() + " trainings for trainer: " + trainerUsername);
+        LOG.info("Found {} trainings for trainer: {}", trainings.size(), trainerUsername);
 
         return trainings;
     }
@@ -164,7 +164,7 @@ public class TrainingServiceImpl implements TrainingService {
 
         // Save Training
         Training savedTraining = trainingRepository.save(training);
-        LOG.info("Training added successfully with ID: " + savedTraining.getId());
+        LOG.info("Training added successfully with ID: {}", savedTraining.getId());
 
         // Create Trainee-Trainer Relationship
         traineeTrainerService.createTraineeTrainer(traineeUsername, trainerUsername);

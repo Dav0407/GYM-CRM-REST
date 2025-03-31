@@ -9,6 +9,8 @@ import com.epam.gym_crm.dto.response.TrainingResponseDTO;
 import com.epam.gym_crm.dto.response.TrainingTypeResponseDTO;
 import com.epam.gym_crm.service.TrainingService;
 import com.epam.gym_crm.service.TrainingTypeService;
+import com.epam.gym_crm.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,26 +29,38 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrainingController {
 
+    private final UserService userService;
     private final TrainingService trainingService;
     private final TrainingTypeService trainingTypeService;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TrainingResponseDTO> addTraining(@RequestBody AddTrainingRequestDTO request) {
+    public ResponseEntity<TrainingResponseDTO> addTraining(@Valid @RequestBody AddTrainingRequestDTO request,
+                                                           @RequestHeader(value = "Username") String headerUsername,
+                                                           @RequestHeader(value = "Password") String headerPassword) {
+        userService.validateCredentials(headerUsername, headerPassword);
         return ResponseEntity.status(HttpStatus.CREATED).body(trainingService.addTraining(request));
     }
 
     @GetMapping(value = "/trainees", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<TraineeTrainingResponseDTO>> getTraineeTrainings(@RequestBody GetTraineeTrainingsRequestDTO request) {
+    public ResponseEntity<List<TraineeTrainingResponseDTO>> getTraineeTrainings(@Valid @RequestBody GetTraineeTrainingsRequestDTO request,
+                                                                                @RequestHeader(value = "Username") String headerUsername,
+                                                                                @RequestHeader(value = "Password") String headerPassword) {
+        userService.validateCredentials(headerUsername, headerPassword);
         return ResponseEntity.status(HttpStatus.FOUND).body(trainingService.getTraineeTrainings(request));
     }
 
     @GetMapping(value = "/trainers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<TrainerTrainingResponseDTO>> getTraineeTrainings(@RequestBody GetTrainerTrainingsRequestDTO request) {
+    public ResponseEntity<List<TrainerTrainingResponseDTO>> getTraineeTrainings(@Valid @RequestBody GetTrainerTrainingsRequestDTO request,
+                                                                                @RequestHeader(value = "Username") String headerUsername,
+                                                                                @RequestHeader(value = "Password") String headerPassword) {
+        userService.validateCredentials(headerUsername, headerPassword);
         return ResponseEntity.status(HttpStatus.FOUND).body(trainingService.getTrainerTrainings(request));
     }
 
     @GetMapping(value = "/types", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<TrainingTypeResponseDTO>> getTrainingTypes() {
+    public ResponseEntity<List<TrainingTypeResponseDTO>> getTrainingTypes(@RequestHeader(value = "Username") String headerUsername,
+                                                                          @RequestHeader(value = "Password") String headerPassword) {
+        userService.validateCredentials(headerUsername, headerPassword);
         return ResponseEntity.status(HttpStatus.FOUND).body(trainingTypeService.getAllTrainingTypes());
     }
 }

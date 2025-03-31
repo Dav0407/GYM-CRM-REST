@@ -10,6 +10,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +28,12 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    private static final Log LOG = LogFactory.getLog(UserServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(UserServiceImpl.class);
     private static final SecureRandom RANDOM = new SecureRandom();
 
     @Override
     public User saveUser(User user) {
-        LOG.info("Saving user: " + user.getUsername());
+        LOG.info("Saving user: {}", user.getUsername());
         return userRepository.save(user);
     }
 
@@ -39,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean checkUsernameExists(String username) {
         boolean exists = userRepository.findByUsername(username).isPresent();
-        LOG.info("Checking if username exists (" + username + "): " + exists);
+        LOG.info("Checking if username exists ({}): {}", username, exists);
         return exists;
     }
 
@@ -47,12 +49,12 @@ public class UserServiceImpl implements UserService {
     public User validateCredentials(String username, String password) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> {
-                    LOG.warn("Username not found: " + username);
+                    LOG.warn("Username not found: {}", username);
                     return new InvalidUserCredentialException("Username or password is incorrect.");
                 });
 
         if (!user.getPassword().equals(password)) {
-            LOG.info("Password validation failed for user: " + username);
+            LOG.info("Password validation failed for user: {}", username);
             throw new InvalidUserCredentialException("Username or password is incorrect.");
         }
 
@@ -64,17 +66,17 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO changePassword(String username, String oldPassword, String newPassword) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> {
-                    LOG.warn("User not found: " + username);
+                    LOG.warn("User not found: {}", username);
                     return new RuntimeException("User not found.");
                 });
 
         if (!user.getPassword().equals(oldPassword)) {
-            LOG.error("Old password does not match for " + username);
+            LOG.error("Old password does not match for {}", username);
             throw new IllegalArgumentException("Old password is incorrect.");
         }
 
         user.setPassword(newPassword);
-        LOG.info("Password successfully changed for " + username);
+        LOG.info("Password successfully changed for {}", username);
 
         return userMapper.toUserResponseDTO(user);
     }
@@ -86,19 +88,19 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("First name and last name cannot be empty.");
         }
 
-        LOG.info("Generating username for: " + firstName + " " + lastName);
+        LOG.info("Generating username for: {} {}", firstName, lastName);
 
         String baseUsername = firstName.trim().toLowerCase() + "." + lastName.trim().toLowerCase();
         String username = baseUsername;
         int suffix = 1;
 
         while (checkUsernameExists(username)) {
-            LOG.warn("Username conflict: " + username + " already exists. Trying next.");
+            LOG.warn("Username conflict: {} already exists. Trying next.", username);
             username = baseUsername + suffix;
             suffix++;
         }
 
-        LOG.info("Generated unique username: " + username);
+        LOG.info("Generated unique username: {}", username);
         return username;
     }
 
@@ -119,13 +121,13 @@ public class UserServiceImpl implements UserService {
             int updatedCount = userRepository.toggleStatus(username);
 
             if (updatedCount > 0) {
-                LOG.info("Successfully toggled status for user: " + username);
+                LOG.info("Successfully toggled status for user: {}", username);
             } else {
-                LOG.warn("No user found with username: " + username);
+                LOG.warn("No user found with username: {}", username);
                 throw new EntityNotFoundException("User not found with username: " + username);
             }
         } catch (Exception e) {
-            LOG.error("Error toggling status for user: " + username, e);
+            LOG.error("Error toggling status for user: {}", username, e);
             throw new ServiceException("Failed to toggle user status", e);
         }
     }
@@ -134,9 +136,9 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String username) {
         userRepository.findByUsername(username).ifPresentOrElse(user -> {
             userRepository.deleteByUsername(username);
-            LOG.info("User deleted successfully: " + username);
+            LOG.info("User deleted successfully: {}", username);
         }, () -> {
-            LOG.warn("Attempted to delete non-existent user: " + username);
+            LOG.warn("Attempted to delete non-existent user: {}", username);
             throw new RuntimeException("User not found.");
         });
     }

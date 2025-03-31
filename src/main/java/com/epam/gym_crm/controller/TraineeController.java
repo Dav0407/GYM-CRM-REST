@@ -5,6 +5,9 @@ import com.epam.gym_crm.dto.request.UpdateTraineeProfileRequestDTO;
 import com.epam.gym_crm.dto.response.TraineeProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TraineeResponseDTO;
 import com.epam.gym_crm.service.TraineeService;
+import com.epam.gym_crm.service.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,29 +29,43 @@ import org.springframework.web.bind.annotation.RestController;
 public class TraineeController {
 
     private final TraineeService traineeService;
+    private final UserService userService;
 
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TraineeResponseDTO> registerTrainee(@RequestBody CreateTraineeProfileRequestDTO request) {
+    public ResponseEntity<TraineeResponseDTO> registerTrainee(@Valid @RequestBody CreateTraineeProfileRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(traineeService.createTraineeProfile(request));
     }
 
     @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TraineeProfileResponseDTO> getTraineeProfile(@PathVariable("username") String username) {
+    public ResponseEntity<TraineeProfileResponseDTO> getTraineeProfile(@PathVariable("username") @NotBlank(message = "Username is required") String username,
+                                                                       @RequestHeader(value = "Username") String headerUsername,
+                                                                       @RequestHeader(value = "Password") String headerPassword) {
+
+        userService.validateCredentials(headerUsername, headerPassword);
         return ResponseEntity.status(HttpStatus.FOUND).body(traineeService.getTraineeByUsername(username));
     }
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TraineeProfileResponseDTO> updateTraineeProfile(@RequestBody UpdateTraineeProfileRequestDTO request) {
+    public ResponseEntity<TraineeProfileResponseDTO> updateTraineeProfile(@Valid @RequestBody UpdateTraineeProfileRequestDTO request,
+                                                                          @RequestHeader(value = "Username") String headerUsername,
+                                                                          @RequestHeader(value = "Password") String headerPassword) {
+        userService.validateCredentials(headerUsername, headerPassword);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(traineeService.updateTraineeProfile(request));
     }
 
     @DeleteMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TraineeProfileResponseDTO> deleteTraineeProfile(@PathVariable("username") String username) {
+    public ResponseEntity<TraineeProfileResponseDTO> deleteTraineeProfile(@PathVariable("username") @NotBlank(message = "Username is required") String username,
+                                                                          @RequestHeader(value = "Username") String headerUsername,
+                                                                          @RequestHeader(value = "Password") String headerPassword) {
+        userService.validateCredentials(headerUsername, headerPassword);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(traineeService.deleteTraineeProfileByUsername(username));
     }
 
     @PatchMapping(value = "/{trainee-username}/status", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TraineeProfileResponseDTO> switchTraineeStatus(@PathVariable("trainee-username") String traineeUsername) {
+    public ResponseEntity<TraineeProfileResponseDTO> switchTraineeStatus(@PathVariable("trainee-username") @NotBlank(message = "Username is required") String traineeUsername,
+                                                                         @RequestHeader(value = "Username") String headerUsername,
+                                                                         @RequestHeader(value = "Password") String headerPassword) {
+        userService.validateCredentials(headerUsername, headerPassword);
         traineeService.updateStatus(traineeUsername);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(traineeService.getTraineeByUsername(traineeUsername));
     }

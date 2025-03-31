@@ -2,7 +2,10 @@ package com.epam.gym_crm.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,6 +29,7 @@ import java.util.Properties;
 @Getter
 @Configuration
 @EnableWebMvc
+@RequiredArgsConstructor
 @EnableTransactionManagement
 @ComponentScan("com.epam.gym_crm")
 @PropertySource("classpath:application.properties")
@@ -51,6 +55,11 @@ public class ApplicationConfig implements WebMvcConfigurer {
 
     @Value("${spring.jpa.show-sql}")
     private String showSql;
+
+    @Bean
+    public Validator validator() {
+        return Validation.buildDefaultValidatorFactory().getValidator();
+    }
 
     @Bean
     public DataSource dataSource() {

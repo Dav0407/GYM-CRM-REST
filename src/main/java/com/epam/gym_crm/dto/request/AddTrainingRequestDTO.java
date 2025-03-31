@@ -1,5 +1,6 @@
 package com.epam.gym_crm.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,9 +17,19 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddTrainingRequestDTO {
+
+    @NotBlank(message = "Trainee username can not be null or empty")
     private String traineeUsername;
+
+    @NotBlank(message = "Trainer username can not be null or empty")
     private String trainerUsername;
+
+    @NotBlank(message = "Training name can not be null or empty")
     private String trainingName;
+
+    @NotBlank(message = "Training date can not be null or empty")
     private Date trainingDate;
+
+    @NotBlank(message = "Training duration can not be null or empty")
     private Integer trainingDuration;
 }

@@ -4,6 +4,7 @@ import com.epam.gym_crm.dto.request.ChangePasswordRequestDTO;
 import com.epam.gym_crm.dto.request.LogInRequestDTO;
 import com.epam.gym_crm.dto.response.UserResponseDTO;
 import com.epam.gym_crm.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,12 +23,12 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserResponseDTO> logIn(@RequestBody LogInRequestDTO request) {
+    public ResponseEntity<UserResponseDTO> logIn(@Valid @RequestBody LogInRequestDTO request) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.login(request.getUsername(), request.getPassword()));
     }
 
     @PutMapping(value = "/change-password", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserResponseDTO> changePassword(@RequestBody ChangePasswordRequestDTO request) {
+    public ResponseEntity<UserResponseDTO> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.changePassword(request.getUsername(), request.getOldPassword(), request.getNewPassword()));
     }
 }

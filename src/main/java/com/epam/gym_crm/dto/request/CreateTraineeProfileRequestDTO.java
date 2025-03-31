@@ -1,6 +1,7 @@
 package com.epam.gym_crm.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,9 +21,11 @@ import java.util.Date;
 public class CreateTraineeProfileRequestDTO implements Serializable {
 
     @JsonProperty("firstName")
+    @NotBlank(message = "First name is required")
     private String firstName;
 
     @JsonProperty("lastName")
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
     @JsonProperty("dateOfBirth")

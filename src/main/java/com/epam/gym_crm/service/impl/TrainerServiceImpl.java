@@ -13,8 +13,8 @@ import com.epam.gym_crm.service.TrainerService;
 import com.epam.gym_crm.service.TrainingTypeService;
 import com.epam.gym_crm.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrainerServiceImpl implements TrainerService {
 
-    private static final Log LOG = LogFactory.getLog(TrainerServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(TrainerServiceImpl.class);
 
     private final TrainingTypeService trainingTypeService;
     private final TrainerRepository trainerRepository;
@@ -35,7 +35,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Transactional
     @Override
     public TrainerResponseDTO createTrainerProfile(CreateTrainerProfileRequestDTO request) {
-        LOG.info("Creating new trainer profile for: " + request.getFirstName() + " " + request.getLastName());
+        LOG.info("Creating new trainer profile for: {} {}", request.getFirstName(), request.getLastName());
 
         validateRequest(request);
 
@@ -49,14 +49,14 @@ public class TrainerServiceImpl implements TrainerService {
 
         Trainer savedTrainer = trainerRepository.save(trainer);
 
-        LOG.info("Trainer profile created successfully: " + savedTrainer.toString());
+        LOG.info("Trainer profile created successfully: {}", savedTrainer.toString());
         return getTrainerResponseDTO(trainer);
     }
 
     @Override
     public TrainerResponseDTO getTrainerById(Long id) {
 
-        LOG.info("Fetching trainer by ID: " + id);
+        LOG.info("Fetching trainer by ID: {}", id);
 
         Trainer trainer = trainerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Trainer not found with ID: " + id));
@@ -114,7 +114,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public List<TrainerSecureResponseDTO> getNotAssignedTrainersByTraineeUsername(String traineeUsername) {
-        LOG.info("Fetching unassigned trainers for trainee: " + traineeUsername);
+        LOG.info("Fetching unassigned trainers for trainee: {}", traineeUsername);
 
         // Validate input
         if (!StringUtils.hasText(traineeUsername)) {
@@ -129,11 +129,11 @@ public class TrainerServiceImpl implements TrainerService {
                     .map(trainerMapper::toTrainerSecureResponseDTO)
                     .toList();
 
-            LOG.info("Found " + unassignedTrainers.size() + " unassigned trainers for trainee: " + traineeUsername);
+            LOG.info("Found {} unassigned trainers for trainee: {}", unassignedTrainers.size(), traineeUsername);
 
             return unassignedTrainers;
         } catch (Exception e) {
-            LOG.error("Error while fetching unassigned trainers for trainee: " + traineeUsername, e);
+            LOG.error("Error while fetching unassigned trainers for trainee: {}", traineeUsername, e);
             throw new RuntimeException("Failed to retrieve unassigned trainers", e);
         }
     }
