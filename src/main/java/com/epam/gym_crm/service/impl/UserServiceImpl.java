@@ -6,9 +6,11 @@ import com.epam.gym_crm.exception.InvalidUserCredentialException;
 import com.epam.gym_crm.mapper.UserMapper;
 import com.epam.gym_crm.repository.UserRepository;
 import com.epam.gym_crm.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -113,15 +115,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateStatus(String username) {
-        userRepository.findByUsername(username).ifPresentOrElse(user -> {
-            boolean newStatus = !user.getIsActive();
-            user.setIsActive(newStatus);
-            userRepository.save(user);
-            LOG.info("User status updated: " + username + " -> isActive: " + newStatus);
-        }, () -> {
-            LOG.warn("User not found: " + username);
-            throw new RuntimeException("User not found.");
-        });
+        try {
+            int updatedCount = userRepository.toggleStatus(username);
+
+            if (updatedCount > 0) {
+                LOG.info("Successfully toggled status for user: " + username);
+            } else {
+                LOG.warn("No user found with username: " + username);
+                throw new EntityNotFoundException("User not found with username: " + username);
+            }
+        } catch (Exception e) {
+            LOG.error("Error toggling status for user: " + username, e);
+            throw new ServiceException("Failed to toggle user status", e);
+        }
     }
 
     @Override

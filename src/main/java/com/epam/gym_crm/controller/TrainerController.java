@@ -3,6 +3,7 @@ package com.epam.gym_crm.controller;
 import com.epam.gym_crm.dto.request.CreateTrainerProfileRequestDTO;
 import com.epam.gym_crm.dto.request.UpdateTrainerListRequestDTO;
 import com.epam.gym_crm.dto.request.UpdateTrainerProfileRequestDTO;
+import com.epam.gym_crm.dto.response.TraineeProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerSecureResponseDTO;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,5 +57,9 @@ public class TrainerController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(traineeTrainerService.updateTraineeTrainers(request.getTraineeUsername(), request.getTrainerUsernames()));
     }
 
-
+    @PatchMapping(value = "/{trainer-username}/status", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TrainerProfileResponseDTO> switchTraineeStatus(@PathVariable("trainer-username") String trainerUsername) {
+        trainerService.updateStatus(trainerUsername);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(trainerService.getTrainerByUsername(trainerUsername));
+    }
 }

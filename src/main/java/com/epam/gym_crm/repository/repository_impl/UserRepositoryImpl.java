@@ -79,4 +79,14 @@ public class UserRepositoryImpl implements UserRepository {
         user.setPassword(newPassword);
         entityManager.merge(user);
     }
+
+    @Transactional
+    @Override
+    public int toggleStatus(String username) {
+       return entityManager.createQuery(
+                        "UPDATE User u SET u.isActive = CASE WHEN u.isActive = true THEN false ELSE true END " +
+                                "WHERE u.username = :username")
+                .setParameter("username", username)
+                .executeUpdate();
+    }
 }
