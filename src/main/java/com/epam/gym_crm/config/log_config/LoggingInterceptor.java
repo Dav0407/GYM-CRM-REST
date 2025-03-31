@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 public class LoggingInterceptor implements HandlerInterceptor {
@@ -12,7 +13,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
     private static final Logger LOG = LogManager.getLogger(LoggingInterceptor.class);
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
         String transactionId = ThreadContext.get("transactionId"); // Retrieve transactionId
 
         LOG.info("Transaction: {} - Incoming Request: {} {} - Headers: {}",
@@ -22,7 +23,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    public void afterCompletion(@NonNull HttpServletRequest request, HttpServletResponse response, @NonNull Object handler, Exception ex) {
         String transactionId = ThreadContext.get("transactionId");
 
         LOG.info("Transaction: {} - Response Status: {} - Error: {}",
