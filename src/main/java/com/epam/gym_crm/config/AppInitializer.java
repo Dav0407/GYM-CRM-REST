@@ -8,7 +8,7 @@ import org.springframework.web.WebApplicationInitializer;
 
 public class AppInitializer implements WebApplicationInitializer {
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
+    public void onStartup(ServletContext servletContext) {
         FilterRegistration.Dynamic transactionLoggingFilter = servletContext.addFilter("transactionLoggingFilter", new TransactionLoggingFilter());
         transactionLoggingFilter.addMappingForUrlPatterns(null, false, "/*"); // Apply to all URLs
     }

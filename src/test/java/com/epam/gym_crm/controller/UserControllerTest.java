@@ -3,7 +3,6 @@ package com.epam.gym_crm.controller;
 import com.epam.gym_crm.dto.request.ChangePasswordRequestDTO;
 import com.epam.gym_crm.dto.request.LogInRequestDTO;
 import com.epam.gym_crm.dto.response.UserResponseDTO;
-import com.epam.gym_crm.exception.InvalidPasswordException;
 import com.epam.gym_crm.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,11 +15,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static com.epam.gym_crm.handler.BusinessErrorCodes.VALIDATION_FAILED;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
