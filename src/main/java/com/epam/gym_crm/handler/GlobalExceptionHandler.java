@@ -1,7 +1,9 @@
 package com.epam.gym_crm.handler;
 
 import com.epam.gym_crm.dto.response.ExceptionResponse;
+import com.epam.gym_crm.exception.InvalidPasswordException;
 import com.epam.gym_crm.exception.InvalidUserCredentialException;
+import com.epam.gym_crm.exception.UserNotFoundException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +55,32 @@ public class GlobalExceptionHandler {
                         .businessErrorDescription(USER_UNAUTHORIZED.getDescription())
                         .errorMessage(exception.getMessage())
                         .build());
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidPasswordException(InvalidPasswordException exception) {
+        LOG.error("InvalidPasswordException: ", exception);
+
+        return ResponseEntity.status(VALIDATION_FAILED.getHttpStatus()).body(
+                ExceptionResponse.builder()
+                        .businessErrorCode(VALIDATION_FAILED.getCode())
+                        .businessErrorDescription(VALIDATION_FAILED.getDescription())
+                        .errorMessage(exception.getMessage())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleUserNotFoundException(UserNotFoundException exception) {
+        LOG.error("UserNotFoundException: ", exception);
+
+        return ResponseEntity.status(USER_UNAUTHORIZED.getHttpStatus()).body(
+                ExceptionResponse.builder()
+                        .businessErrorCode(USER_UNAUTHORIZED.getCode())
+                        .businessErrorDescription(USER_UNAUTHORIZED.getDescription())
+                        .errorMessage(exception.getMessage())
+                        .build()
+        );
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)

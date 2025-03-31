@@ -1,6 +1,7 @@
 package com.epam.gym_crm.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +29,6 @@ public class UpdateTrainerProfileRequestDTO {
 
     private String trainingTypeName;
 
-    @NotBlank(message = "IsActive is required!")
+    @NotNull(message = "IsActive is required!")
     private Boolean isActive;
 }

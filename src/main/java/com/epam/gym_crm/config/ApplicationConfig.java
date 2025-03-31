@@ -1,7 +1,10 @@
 package com.epam.gym_crm.config;
 
+import com.epam.gym_crm.config.log_config.LoggingInterceptor;
+import com.epam.gym_crm.config.log_config.TransactionLoggingFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.servlet.Filter;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import lombok.Getter;
@@ -20,6 +23,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
@@ -59,6 +63,11 @@ public class ApplicationConfig implements WebMvcConfigurer {
     @Bean
     public Validator validator() {
         return Validation.buildDefaultValidatorFactory().getValidator();
+    }
+
+    @Bean
+    public Filter transactionLoggingFilter() {
+        return new TransactionLoggingFilter();
     }
 
     @Bean
@@ -105,5 +114,10 @@ public class ApplicationConfig implements WebMvcConfigurer {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(new MappingJackson2HttpMessageConverter(objectMapper()));
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new LoggingInterceptor());
     }
 }

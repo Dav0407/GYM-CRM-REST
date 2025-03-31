@@ -1,6 +1,7 @@
 package com.epam.gym_crm.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,6 @@ public class UpdateTrainerListRequestDTO {
     @NotBlank(message = "Trainee username is required")
     private String traineeUsername;
 
-    @NotBlank(message = "Trainer list is required")
+    @NotNull(message = "Trainer list is required")
     private List<String> trainerUsernames;
 }

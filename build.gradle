@@ -27,9 +27,13 @@ ext {
     lombokMapstructBindingVersion = '0.2.0'
     envVersion = '3.0.0'
     log4jVersion = '2.21.1'
+    swaggerVersion = '3.0.0'
     junitBomVersion = '5.11.0'
     assertjVersion = '3.25.1'
     mockitoVersion = '5.11.0'
+    restAssuredVersion = '5.4.0'
+    hamcrestVersion = '2.2'
+    xmlPathVersion = '2.9.0'
 }
 
 dependencies {
@@ -76,7 +80,7 @@ dependencies {
     implementation group: 'org.mapstruct', name: 'mapstruct', version: mapstructVersion
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion
 
-    // If using Lombok together with MapStruct, add this dependency
+    // If using Lombok together with MapStruct
     annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: lombokMapstructBindingVersion
 
     // Logging
@@ -84,11 +88,37 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
 
+    //Swagger
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: swaggerVersion
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: swaggerVersion
+    implementation group: 'io.springfox', name: 'springfox-spring-webmvc', version: swaggerVersion
+
     // JUnit & Testing
     testImplementation platform(group: 'org.junit', name: 'junit-bom', version: junitBomVersion)
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: junitBomVersion
     testImplementation group: 'org.assertj', name: 'assertj-core', version: assertjVersion
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: mockitoVersion
+
+    // Spring MVC Test support
+    testImplementation group: 'org.springframework', name: 'spring-test', version: springVersion
+
+    // RestAssured for integration testing
+    testImplementation group: 'io.rest-assured', name: 'rest-assured', version: restAssuredVersion
+    testImplementation group: 'io.rest-assured', name: 'json-path', version: restAssuredVersion
+    testImplementation group: 'io.rest-assured', name: 'xml-path', version: restAssuredVersion
+
+    // Hamcrest for assertions
+    testImplementation group: 'org.hamcrest', name: 'hamcrest', version: hamcrestVersion
+
+    // For JSON schema validation (optional)
+    testImplementation group: 'io.rest-assured', name: 'json-schema-validator', version: restAssuredVersion
+
+    // For better MockMvc integration with RestAssured (optional)
+    testImplementation group: 'io.rest-assured', name: 'spring-mock-mvc', version: restAssuredVersion
+
+    // Jayway JsonPath for MockMvc JSON assertions
+    testImplementation group: 'com.jayway.jsonpath', name:'json-path', version: '2.9.0'
+
 }
 
 test {

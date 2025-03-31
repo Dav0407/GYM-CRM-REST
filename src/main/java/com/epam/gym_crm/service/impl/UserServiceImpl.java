@@ -2,7 +2,9 @@ package com.epam.gym_crm.service.impl;
 
 import com.epam.gym_crm.dto.response.UserResponseDTO;
 import com.epam.gym_crm.entity.User;
+import com.epam.gym_crm.exception.InvalidPasswordException;
 import com.epam.gym_crm.exception.InvalidUserCredentialException;
+import com.epam.gym_crm.exception.UserNotFoundException;
 import com.epam.gym_crm.mapper.UserMapper;
 import com.epam.gym_crm.repository.UserRepository;
 import com.epam.gym_crm.service.UserService;
@@ -65,12 +67,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     LOG.warn("User not found: {}", username);
-                    return new RuntimeException("User not found.");
+                    return new UserNotFoundException("User not found.");
                 });
 
         if (!user.getPassword().equals(oldPassword)) {
             LOG.error("Old password does not match for {}", username);
-            throw new IllegalArgumentException("Old password is incorrect.");
+            throw new InvalidPasswordException("Old password is incorrect.");
         }
 
         user.setPassword(newPassword);
