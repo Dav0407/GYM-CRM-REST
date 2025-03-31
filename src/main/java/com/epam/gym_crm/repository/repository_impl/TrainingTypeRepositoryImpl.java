@@ -8,6 +8,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -51,5 +52,10 @@ public class TrainingTypeRepositoryImpl implements TrainingTypeRepository {
         }
     }
 
+    @Override
+    public List<TrainingType> findAll() {
+        return entityManager.createQuery("SELECT t FROM TrainingType t", TrainingType.class)
+                .getResultList();
+    }
 }
 

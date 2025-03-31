@@ -21,10 +21,10 @@ class GetTrainerTrainingsRequestDTOTest {
 
         GetTrainerTrainingsRequestDTO dto = new GetTrainerTrainingsRequestDTO(
                 "trainer_01",
-                "john_doe",
                 fromDate,
-                toDate
-        );
+                toDate,
+                "john_doe"
+                );
 
         assertThat(dto.getTrainerUsername()).isEqualTo("trainer_01");
         assertThat(dto.getTraineeUsername()).isEqualTo("john_doe");
@@ -38,8 +38,8 @@ class GetTrainerTrainingsRequestDTOTest {
         Date toDate = new Date();
 
         GetTrainerTrainingsRequestDTO dto = GetTrainerTrainingsRequestDTO.builder()
-                .TrainerUsername("trainer_02")
-                .TraineeUsername("alice_smith")
+                .trainerUsername("trainer_02")
+                .traineeUsername("alice_smith")
                 .from(fromDate)
                 .to(toDate)
                 .build();
@@ -56,13 +56,13 @@ class GetTrainerTrainingsRequestDTOTest {
         Date toDate = new Date();
 
         GetTrainerTrainingsRequestDTO dto = GetTrainerTrainingsRequestDTO.builder()
-                .TrainerUsername("trainer_x")
-                .TraineeUsername("test_user")
+                .trainerUsername("trainer_x")
+                .traineeUsername("test_user")
                 .from(fromDate)
                 .to(toDate)
                 .build();
 
         String dtoString = dto.toString();
-        assertThat(dtoString).contains("TrainerUsername=trainer_x", "TraineeUsername=test_user");
+        assertThat(dtoString).contains("trainerUsername=trainer_x", "traineeUsername=test_user");
     }
 }

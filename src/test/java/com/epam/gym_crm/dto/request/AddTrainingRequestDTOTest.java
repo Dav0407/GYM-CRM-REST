@@ -21,7 +21,6 @@ class AddTrainingRequestDTOTest {
                 "trainee123",
                 "trainer456",
                 "Advanced Java",
-                "Programming",
                 trainingDate,
                 120
         );
@@ -29,7 +28,6 @@ class AddTrainingRequestDTOTest {
         assertThat(dto.getTraineeUsername()).isEqualTo("trainee123");
         assertThat(dto.getTrainerUsername()).isEqualTo("trainer456");
         assertThat(dto.getTrainingName()).isEqualTo("Advanced Java");
-        assertThat(dto.getTrainingTypeName()).isEqualTo("Programming");
         assertThat(dto.getTrainingDate()).isEqualTo(trainingDate);
         assertThat(dto.getTrainingDuration()).isEqualTo(120);
     }
@@ -41,7 +39,6 @@ class AddTrainingRequestDTOTest {
                 .traineeUsername("user1")
                 .trainerUsername("trainerX")
                 .trainingName("Machine Learning Basics")
-                .trainingTypeName("AI")
                 .trainingDate(trainingDate)
                 .trainingDuration(90)
                 .build();
@@ -49,7 +46,6 @@ class AddTrainingRequestDTOTest {
         assertThat(dto.getTraineeUsername()).isEqualTo("user1");
         assertThat(dto.getTrainerUsername()).isEqualTo("trainerX");
         assertThat(dto.getTrainingName()).isEqualTo("Machine Learning Basics");
-        assertThat(dto.getTrainingTypeName()).isEqualTo("AI");
         assertThat(dto.getTrainingDate()).isEqualTo(trainingDate);
         assertThat(dto.getTrainingDuration()).isEqualTo(90);
     }

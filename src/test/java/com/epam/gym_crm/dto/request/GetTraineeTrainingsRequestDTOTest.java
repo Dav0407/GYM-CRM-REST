@@ -21,9 +21,9 @@ class GetTraineeTrainingsRequestDTOTest {
 
         GetTraineeTrainingsRequestDTO dto = new GetTraineeTrainingsRequestDTO(
                 "john_doe",
-                "trainer_01",
                 fromDate,
                 toDate,
+                "trainer_01",
                 "Cardio"
         );
 

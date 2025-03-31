@@ -19,7 +19,6 @@ public class AddTrainingRequestDTO {
     private String traineeUsername;
     private String trainerUsername;
     private String trainingName;
-    private String trainingTypeName;
     private Date trainingDate;
     private Integer trainingDuration;
 }

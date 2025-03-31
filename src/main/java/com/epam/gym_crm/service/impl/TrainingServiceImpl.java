@@ -3,6 +3,8 @@ package com.epam.gym_crm.service.impl;
 import com.epam.gym_crm.dto.request.AddTrainingRequestDTO;
 import com.epam.gym_crm.dto.request.GetTraineeTrainingsRequestDTO;
 import com.epam.gym_crm.dto.request.GetTrainerTrainingsRequestDTO;
+import com.epam.gym_crm.dto.response.TraineeTrainingResponseDTO;
+import com.epam.gym_crm.dto.response.TrainerTrainingResponseDTO;
 import com.epam.gym_crm.dto.response.TrainingResponseDTO;
 import com.epam.gym_crm.entity.Training;
 import com.epam.gym_crm.entity.TrainingType;
@@ -38,7 +40,7 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingMapper trainingMapper;
 
     @Override
-    public List<TrainingResponseDTO> getTraineeTrainings(GetTraineeTrainingsRequestDTO request) {
+    public List<TraineeTrainingResponseDTO> getTraineeTrainings(GetTraineeTrainingsRequestDTO request) {
         LOG.info("Fetching trainings for trainee: {}" + request.getTraineeUsername());
 
         // Validate trainee username
@@ -63,10 +65,10 @@ public class TrainingServiceImpl implements TrainingService {
         }
 
         // Fetch trainings
-        List<TrainingResponseDTO> trainings = trainingRepository.findAllTraineeTrainings(
+        List<TraineeTrainingResponseDTO> trainings = trainingRepository.findAllTraineeTrainings(
                         traineeUsername, trainerUsername, request.getFrom(), request.getTo(), request.getTrainingType())
                 .stream()
-                .map(this::getTrainingDTO)
+                .map(trainingMapper::toTraineeTrainingResponseDTO)
                 .toList();
 
         LOG.info("Found " + trainings.size() + " trainings for trainee: " + traineeUsername);
@@ -76,7 +78,7 @@ public class TrainingServiceImpl implements TrainingService {
 
 
     @Override
-    public List<TrainingResponseDTO> getTrainerTrainings(GetTrainerTrainingsRequestDTO request) {
+    public List<TrainerTrainingResponseDTO> getTrainerTrainings(GetTrainerTrainingsRequestDTO request) {
         LOG.info("Fetching trainings for trainer: {}" + request.getTrainerUsername());
 
         // Validate trainer username
@@ -106,17 +108,16 @@ public class TrainingServiceImpl implements TrainingService {
         }
 
         // Fetch trainings
-        List<TrainingResponseDTO> trainings = trainingRepository.findAllTrainerTrainings(
+        List<TrainerTrainingResponseDTO> trainings = trainingRepository.findAllTrainerTrainings(
                         trainerUsername, traineeUsername, request.getFrom(), request.getTo())
                 .stream()
-                .map(this::getTrainingDTO)
+                .map(trainingMapper::toTrainerTrainingResponseDTO)
                 .toList();
 
         LOG.info("Found " + trainings.size() + " trainings for trainer: " + trainerUsername);
 
         return trainings;
     }
-
 
     @Override
     public TrainingResponseDTO addTraining(AddTrainingRequestDTO request) {
@@ -149,8 +150,8 @@ public class TrainingServiceImpl implements TrainingService {
                 .orElseThrow(() -> new IllegalArgumentException("No trainer found with username: " + trainerUsername));
 
         // Fetch TrainingType
-        TrainingType trainingType = trainingTypeService.findByValue(request.getTrainingTypeName())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid training type: " + request.getTrainingTypeName()));
+        TrainingType trainingType = trainingTypeService.findByValue(trainer.getSpecialization().getTrainingTypeName())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid training type: " + trainer.getSpecialization().getTrainingTypeName()));
 
         // Create Training Object
         Training training = new Training();

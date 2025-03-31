@@ -17,8 +17,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class GetTraineeTrainingsRequestDTO {
     private String traineeUsername;
-    private String trainerUsername;
     private Date from;
     private Date to;
+    private String trainerUsername;
     private String trainingType;
 }

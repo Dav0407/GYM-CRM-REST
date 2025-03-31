@@ -5,8 +5,10 @@ import com.epam.gym_crm.dto.request.GetTraineeTrainingsRequestDTO;
 import com.epam.gym_crm.dto.request.GetTrainerTrainingsRequestDTO;
 import com.epam.gym_crm.dto.response.TraineeProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TraineeResponseDTO;
+import com.epam.gym_crm.dto.response.TraineeTrainingResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerResponseDTO;
+import com.epam.gym_crm.dto.response.TrainerTrainingResponseDTO;
 import com.epam.gym_crm.dto.response.TrainingResponseDTO;
 import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.Trainer;
@@ -68,10 +70,8 @@ class TrainingServiceImplTest {
 
     private Trainee traineeEntity;
     private Trainer trainerEntity;
-    private TraineeResponseDTO traineeResponseDTO;
     private TraineeProfileResponseDTO traineeProfileResponseDTO;
     private TrainerProfileResponseDTO trainerProfileResponseDTO;
-    private TrainerResponseDTO trainerResponseDTO;
     private Training training;
     private TrainingType trainingType;
     private Date trainingDate;
@@ -95,6 +95,7 @@ class TrainingServiceImplTest {
         trainerEntity = new Trainer();
         trainerEntity.setId(1L);
         trainerEntity.setUser(trainerUser);
+        trainerEntity.setSpecialization(TrainingType.builder().trainingTypeName("Cardio").build());
 
         trainingType = new TrainingType();
         trainingType.setId(1L);
@@ -110,7 +111,7 @@ class TrainingServiceImplTest {
         training.setTrainingName("Morning Run");
 
         // Create response DTOs
-        traineeResponseDTO = new TraineeResponseDTO();
+        TraineeResponseDTO traineeResponseDTO = new TraineeResponseDTO();
         traineeResponseDTO.setId(traineeEntity.getId());
         traineeResponseDTO.setUsername(traineeEntity.getUser().getUsername());
 
@@ -118,7 +119,7 @@ class TrainingServiceImplTest {
         traineeProfileResponseDTO.setId(traineeEntity.getId());
         traineeProfileResponseDTO.setUsername(traineeEntity.getUser().getUsername());
 
-        trainerResponseDTO = new TrainerResponseDTO();
+        TrainerResponseDTO trainerResponseDTO = new TrainerResponseDTO();
         trainerResponseDTO.setId(trainerEntity.getId());
         trainerResponseDTO.setUsername(trainerEntity.getUser().getUsername());
 
@@ -135,8 +136,7 @@ class TrainingServiceImplTest {
         request.setFrom(new Date(System.currentTimeMillis() - 1000)); // Past date
         request.setTo(new Date());
 
-        TrainingResponseDTO mockTrainingResponseDTO = new TrainingResponseDTO();
-        mockTrainingResponseDTO.setId(1L);
+        TraineeTrainingResponseDTO mockTrainingResponseDTO = new TraineeTrainingResponseDTO();
         mockTrainingResponseDTO.setTrainingName("Morning Run");
         mockTrainingResponseDTO.setTrainingType("Cardio");
 
@@ -144,22 +144,21 @@ class TrainingServiceImplTest {
                 "trainee.username", null, request.getFrom(), request.getTo(), null))
                 .thenReturn(Collections.singletonList(training));
 
-        when(trainingMapper.toTrainingResponseDTO(training))
+        when(trainingMapper.toTraineeTrainingResponseDTO(training))
                 .thenReturn(mockTrainingResponseDTO);
 
         // Act
-        List<TrainingResponseDTO> result = trainingService.getTraineeTrainings(request);
+        List<TraineeTrainingResponseDTO> result = trainingService.getTraineeTrainings(request);
 
         // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(1L, result.get(0).getId());
         assertEquals("Morning Run", result.get(0).getTrainingName());
         assertEquals("Cardio", result.get(0).getTrainingType());
 
         verify(trainingRepository, times(1)).findAllTraineeTrainings(
                 "trainee.username", null, request.getFrom(), request.getTo(), null);
-        verify(trainingMapper, times(1)).toTrainingResponseDTO(training);
+        verify(trainingMapper, times(1)).toTraineeTrainingResponseDTO(training);
     }
 
     @Test
@@ -202,14 +201,13 @@ class TrainingServiceImplTest {
                 "trainee.username", "trainer.username", null, null, null))
                 .thenReturn(Collections.singletonList(training));
 
-        TrainingResponseDTO mockTrainingResponseDTO = new TrainingResponseDTO();
-        mockTrainingResponseDTO.setId(1L);
+        TraineeTrainingResponseDTO mockTrainingResponseDTO = new TraineeTrainingResponseDTO();
         mockTrainingResponseDTO.setTrainingName("Morning Run");
-        when(trainingMapper.toTrainingResponseDTO(training))
+        when(trainingMapper.toTraineeTrainingResponseDTO(training))
                 .thenReturn(mockTrainingResponseDTO);
 
         // Act
-        List<TrainingResponseDTO> result = trainingService.getTraineeTrainings(request);
+        List<TraineeTrainingResponseDTO> result = trainingService.getTraineeTrainings(request);
 
         // Assert
         assertNotNull(result);
@@ -242,8 +240,7 @@ class TrainingServiceImplTest {
         request.setFrom(new Date(System.currentTimeMillis() - 1000)); // Past date
         request.setTo(new Date());
 
-        TrainingResponseDTO mockTrainingResponseDTO = new TrainingResponseDTO();
-        mockTrainingResponseDTO.setId(1L);
+        TrainerTrainingResponseDTO mockTrainingResponseDTO = new TrainerTrainingResponseDTO();
         mockTrainingResponseDTO.setTrainingName("Morning Run");
         mockTrainingResponseDTO.setTrainingType("Cardio");
 
@@ -252,22 +249,21 @@ class TrainingServiceImplTest {
                 "trainer.username", null, request.getFrom(), request.getTo()))
                 .thenReturn(Collections.singletonList(training));
 
-        when(trainingMapper.toTrainingResponseDTO(training))
+        when(trainingMapper.toTrainerTrainingResponseDTO(training))
                 .thenReturn(mockTrainingResponseDTO);
 
         // Act
-        List<TrainingResponseDTO> result = trainingService.getTrainerTrainings(request);
+        List<TrainerTrainingResponseDTO> result = trainingService.getTrainerTrainings(request);
 
         // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(1L, result.get(0).getId());
         assertEquals("Morning Run", result.get(0).getTrainingName());
 
         verify(trainerService, times(1)).getTrainerByUsername("trainer.username");
         verify(trainingRepository, times(1)).findAllTrainerTrainings(
                 "trainer.username", null, request.getFrom(), request.getTo());
-        verify(trainingMapper, times(1)).toTrainingResponseDTO(training);
+        verify(trainingMapper, times(1)).toTrainerTrainingResponseDTO(training);
     }
 
     @Test
@@ -328,14 +324,13 @@ class TrainingServiceImplTest {
                 "trainer.username", "trainee.username", null, null))
                 .thenReturn(Collections.singletonList(training));
 
-        TrainingResponseDTO mockTrainingResponseDTO = new TrainingResponseDTO();
-        mockTrainingResponseDTO.setId(1L);
+        TrainerTrainingResponseDTO mockTrainingResponseDTO = new TrainerTrainingResponseDTO();
         mockTrainingResponseDTO.setTrainingName("Morning Run");
-        when(trainingMapper.toTrainingResponseDTO(training))
+        when(trainingMapper.toTrainerTrainingResponseDTO(training))
                 .thenReturn(mockTrainingResponseDTO);
 
         // Act
-        List<TrainingResponseDTO> result = trainingService.getTrainerTrainings(request);
+        List<TrainerTrainingResponseDTO> result = trainingService.getTrainerTrainings(request);
 
         // Assert
         assertNotNull(result);
@@ -371,7 +366,6 @@ class TrainingServiceImplTest {
         request.setTrainingDate(trainingDate);
         request.setTrainingDuration(60);
         request.setTrainingName("Morning Run");
-        request.setTrainingTypeName("Cardio");
 
         // Create the training object that matches what will be passed to the mapper
         Training trainingToMap = new Training();
@@ -509,7 +503,6 @@ class TrainingServiceImplTest {
         request.setTrainingDate(trainingDate);
         request.setTrainingDuration(60);
         request.setTrainingName("Morning Run");
-        request.setTrainingTypeName("Cardio");
 
         when(traineeService.getTraineeEntityByUsername("non.existent.trainee")).thenReturn(null);
 
@@ -530,7 +523,6 @@ class TrainingServiceImplTest {
         request.setTrainingDate(trainingDate);
         request.setTrainingDuration(60);
         request.setTrainingName("Morning Run");
-        request.setTrainingTypeName("Cardio");
 
         when(traineeService.getTraineeEntityByUsername("trainee.username")).thenReturn(traineeEntity);
         when(trainerService.getTrainerEntityByUsername("non.existent.trainer")).thenReturn(null);
@@ -552,10 +544,16 @@ class TrainingServiceImplTest {
         request.setTrainingDate(trainingDate);
         request.setTrainingDuration(60);
         request.setTrainingName("Morning Run");
-        request.setTrainingTypeName("InvalidType");
+
+        // Create a trainer with an invalid specialization
+        Trainer trainerWithInvalidType = new Trainer();
+        trainerWithInvalidType.setId(1L);
+        trainerWithInvalidType.setUser(new User());
+        trainerWithInvalidType.getUser().setUsername("trainer.username");
+        trainerWithInvalidType.setSpecialization(TrainingType.builder().trainingTypeName("InvalidType").build());
 
         when(traineeService.getTraineeEntityByUsername("trainee.username")).thenReturn(traineeEntity);
-        when(trainerService.getTrainerEntityByUsername("trainer.username")).thenReturn(trainerEntity);
+        when(trainerService.getTrainerEntityByUsername("trainer.username")).thenReturn(trainerWithInvalidType);
         when(trainingTypeService.findByValue("InvalidType")).thenReturn(Optional.empty());
 
         // Act & Assert

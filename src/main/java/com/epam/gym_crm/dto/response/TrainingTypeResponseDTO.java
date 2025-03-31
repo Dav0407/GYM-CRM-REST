@@ -1,4 +1,4 @@
-package com.epam.gym_crm.dto.request;
+package com.epam.gym_crm.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,17 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
-
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetTrainerTrainingsRequestDTO {
-    private String trainerUsername;
-    private Date from;
-    private Date to;
-    private String traineeUsername;
+public class TrainingTypeResponseDTO {
+    private Long id;
+    private String trainingTypeName;
 }

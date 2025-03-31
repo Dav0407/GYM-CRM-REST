@@ -16,14 +16,12 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TrainingResponseDTO {
-    private Long id;
-    private TraineeResponseDTO trainee;
-    private TrainerResponseDTO trainer;
+public class TraineeTrainingResponseDTO {
     private String trainingName;
-    private String trainingType;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date trainingDate;
+    private String trainingType;
     private Integer trainingDuration;
+    private String trainerName;
 }
