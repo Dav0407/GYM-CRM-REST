@@ -6,6 +6,7 @@ import com.epam.gym_crm.dto.response.TraineeProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TraineeResponseDTO;
 import com.epam.gym_crm.service.TraineeService;
 import com.epam.gym_crm.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/trainees")
 @RequiredArgsConstructor
+@Tag(name = "Your Controller Name", description = "Description of your controller")
 public class TraineeController {
 
     private final TraineeService traineeService;
