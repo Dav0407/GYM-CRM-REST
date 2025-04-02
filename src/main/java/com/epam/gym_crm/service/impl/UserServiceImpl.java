@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
                 LOG.info("Successfully toggled status for user: {}", username);
             } else {
                 LOG.warn("No user found with username: {}", username);
-                throw new EntityNotFoundException("User not found with username: " + username);
+                throw new UserNotFoundException("User not found with username: " + username);
             }
         } catch (Exception e) {
             LOG.error("Error toggling status for user: {}", username, e);

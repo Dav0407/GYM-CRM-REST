@@ -7,6 +7,8 @@ import com.epam.gym_crm.dto.response.TrainerResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerSecureResponseDTO;
 import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.entity.User;
+import com.epam.gym_crm.exception.ResourceNotFoundException;
+import com.epam.gym_crm.exception.UserNotFoundException;
 import com.epam.gym_crm.mapper.TrainerMapper;
 import com.epam.gym_crm.repository.TrainerRepository;
 import com.epam.gym_crm.service.TrainerService;
@@ -43,7 +45,7 @@ public class TrainerServiceImpl implements TrainerService {
 
         Trainer trainer = Trainer.builder()
                 .specialization(trainingTypeService.findByValue(request.getTrainingType())
-                        .orElseThrow(() -> new RuntimeException("Training type not found: " + request.getTrainingType())))
+                        .orElseThrow(() -> new ResourceNotFoundException("Training type not found: " + request.getTrainingType())))
                 .user(user)
                 .build();
 
@@ -59,7 +61,7 @@ public class TrainerServiceImpl implements TrainerService {
         LOG.info("Fetching trainer by ID: {}", id);
 
         Trainer trainer = trainerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trainer not found with ID: " + id));
+                .orElseThrow(() -> new UserNotFoundException("Trainer not found with ID: " + id));
 
         return getTrainerResponseDTO(trainer);
     }
@@ -71,7 +73,7 @@ public class TrainerServiceImpl implements TrainerService {
         User userByUsername = userService.getUserByUsername(username);
 
         Trainer trainer = trainerRepository.findByUserId(userByUsername.getId())
-                .orElseThrow(() -> new RuntimeException("Trainer not found with username: " + userByUsername.getUsername()));
+                .orElseThrow(() -> new UserNotFoundException("Trainer not found with username: " + userByUsername.getUsername()));
 
         return trainerMapper.toTrainerProfileResponseDTO(trainer);
     }
@@ -81,7 +83,7 @@ public class TrainerServiceImpl implements TrainerService {
         User userByUsername = userService.getUserByUsername(username);
 
         return trainerRepository.findByUserId(userByUsername.getId())
-                .orElseThrow(() -> new RuntimeException("Trainer not found with username: " + userByUsername.getUsername()));
+                .orElseThrow(() -> new UserNotFoundException("Trainer not found with username: " + userByUsername.getUsername()));
     }
 
     @Transactional
@@ -89,7 +91,7 @@ public class TrainerServiceImpl implements TrainerService {
     public TrainerProfileResponseDTO updateTrainerProfile(UpdateTrainerProfileRequestDTO request) {
 
         Trainer trainer = trainerRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("Trainer not found with username: " + request.getUsername()));
+                .orElseThrow(() -> new UserNotFoundException("Trainer not found with username: " + request.getUsername()));
 
         trainer.getUser().setFirstName(request.getFirstName().trim());
         trainer.getUser().setLastName(request.getLastName().trim());
@@ -97,7 +99,7 @@ public class TrainerServiceImpl implements TrainerService {
         trainer.setSpecialization(
                 trainingTypeService.findByValue(
                                 request.getTrainingTypeName())
-                        .orElseThrow(() -> new RuntimeException("Training type not found: " + request.getTrainingTypeName())
+                        .orElseThrow(() -> new ResourceNotFoundException("Training type not found: " + request.getTrainingTypeName())
                         ));
 
         if (request.getIsActive() != trainer.getUser().getIsActive()) {

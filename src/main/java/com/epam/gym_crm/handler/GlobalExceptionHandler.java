@@ -3,7 +3,9 @@ package com.epam.gym_crm.handler;
 import com.epam.gym_crm.dto.response.ExceptionResponse;
 import com.epam.gym_crm.exception.InvalidPasswordException;
 import com.epam.gym_crm.exception.InvalidUserCredentialException;
+import com.epam.gym_crm.exception.ResourceNotFoundException;
 import com.epam.gym_crm.exception.UserNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.epam.gym_crm.handler.BusinessErrorCodes.INTERNAL_ERROR;
+import static com.epam.gym_crm.handler.BusinessErrorCodes.RESOURCE_NOT_FOUND;
+import static com.epam.gym_crm.handler.BusinessErrorCodes.USER_NOT_FOUND;
 import static com.epam.gym_crm.handler.BusinessErrorCodes.USER_UNAUTHORIZED;
 import static com.epam.gym_crm.handler.BusinessErrorCodes.VALIDATION_FAILED;
 
@@ -40,6 +44,19 @@ public class GlobalExceptionHandler {
                 VALIDATION_FAILED.getDescription(),
                 "One or more fields are invalid.",
                 errors
+        );
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleResourceNotFoundException(ResourceNotFoundException exception) {
+        LOG.error("ResourceNotFoundException: ", exception);
+
+        return createExceptionResponse(
+                RESOURCE_NOT_FOUND.getHttpStatus(),
+                RESOURCE_NOT_FOUND.getCode(),
+                RESOURCE_NOT_FOUND.getDescription(),
+                exception.getMessage(),
+                null
         );
     }
 
@@ -74,9 +91,22 @@ public class GlobalExceptionHandler {
         LOG.error("UserNotFoundException: ", exception);
 
         return createExceptionResponse(
-                USER_UNAUTHORIZED.getHttpStatus(),
-                USER_UNAUTHORIZED.getCode(),
-                USER_UNAUTHORIZED.getDescription(),
+                USER_NOT_FOUND.getHttpStatus(),
+                USER_NOT_FOUND.getCode(),
+                USER_NOT_FOUND.getDescription(),
+                exception.getMessage(),
+                null
+        );
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleEntityNotFoundException(EntityNotFoundException exception) {
+        LOG.error("EntityNotFoundException: ", exception);
+
+        return createExceptionResponse(
+                USER_NOT_FOUND.getHttpStatus(),
+                USER_NOT_FOUND.getCode(),
+                USER_NOT_FOUND.getDescription(),
                 exception.getMessage(),
                 null
         );

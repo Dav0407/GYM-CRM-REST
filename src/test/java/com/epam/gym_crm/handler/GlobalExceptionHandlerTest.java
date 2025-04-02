@@ -4,11 +4,14 @@ import com.epam.gym_crm.controller.UserController;
 import com.epam.gym_crm.dto.request.ChangePasswordRequestDTO;
 import com.epam.gym_crm.dto.request.LogInRequestDTO;
 import com.epam.gym_crm.dto.response.ExceptionResponse;
+import com.epam.gym_crm.entity.User;
 import com.epam.gym_crm.exception.InvalidPasswordException;
 import com.epam.gym_crm.exception.InvalidUserCredentialException;
+import com.epam.gym_crm.exception.ResourceNotFoundException;
 import com.epam.gym_crm.exception.UserNotFoundException;
 import com.epam.gym_crm.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +24,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.epam.gym_crm.handler.BusinessErrorCodes.INTERNAL_ERROR;
+import static com.epam.gym_crm.handler.BusinessErrorCodes.RESOURCE_NOT_FOUND;
+import static com.epam.gym_crm.handler.BusinessErrorCodes.USER_NOT_FOUND;
 import static com.epam.gym_crm.handler.BusinessErrorCodes.USER_UNAUTHORIZED;
 import static com.epam.gym_crm.handler.BusinessErrorCodes.VALIDATION_FAILED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -196,7 +202,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void handleUserNotFoundException_ShouldReturnUnauthorizedResponse() throws Exception {
+    void handleUserNotFoundException_ShouldReturnNotFoundResponse() throws Exception {
         // Given
         LogInRequestDTO loginRequest = LogInRequestDTO.builder()
                 .username("nonexistentuser")
@@ -210,15 +216,15 @@ class GlobalExceptionHandlerTest {
         MvcResult result = mockMvc.perform(get("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isNotFound())
                 .andReturn();
 
         // Then
         ExceptionResponse response = objectMapper.readValue(
                 result.getResponse().getContentAsString(), ExceptionResponse.class);
 
-        assertEquals(USER_UNAUTHORIZED.getCode(), response.getBusinessErrorCode());
-        assertEquals(USER_UNAUTHORIZED.getDescription(), response.getBusinessErrorDescription());
+        assertEquals(USER_NOT_FOUND.getCode(), response.getBusinessErrorCode());
+        assertEquals(USER_NOT_FOUND.getDescription(), response.getBusinessErrorDescription());
         assertEquals("User not found", response.getErrorMessage());
     }
 
