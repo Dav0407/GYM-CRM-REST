@@ -1,6 +1,5 @@
 package com.epam.gym_crm.service;
 
-
 import com.epam.gym_crm.entity.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
