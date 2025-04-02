@@ -1,5 +1,6 @@
 package com.epam.gym_crm.service.impl;
 
+import com.epam.gym_crm.dto.request.UpdateTrainerListRequestDTO;
 import com.epam.gym_crm.dto.response.TrainerSecureResponseDTO;
 import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.TraineeTrainer;
@@ -76,30 +77,30 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
 
     @Override
     @Transactional
-    public List<TrainerSecureResponseDTO> updateTraineeTrainers(String traineeUsername, List<String> trainerUsernames) {
+    public List<TrainerSecureResponseDTO> updateTraineeTrainers(UpdateTrainerListRequestDTO request) {
         // Validate inputs
-        if (traineeUsername == null || traineeUsername.isBlank()) {
+        if (request.getTraineeUsername() == null || request.getTraineeUsername().isBlank()) {
             throw new IllegalArgumentException("Trainee username cannot be null or empty.");
         }
 
-        if (trainerUsernames == null) {
+        if (request.getTrainerUsernames() == null) {
             throw new IllegalArgumentException("Trainer usernames list cannot be null.");
         }
 
-        LOG.info("Updating trainers list for trainee: {}", traineeUsername);
+        LOG.info("Updating trainers list for trainee: {}", request.getTraineeUsername());
 
         // Fetch the trainee
-        Trainee trainee = traineeService.getTraineeEntityByUsername(traineeUsername);
+        Trainee trainee = traineeService.getTraineeEntityByUsername(request.getTraineeUsername());
         if (trainee == null) {
-            throw new IllegalArgumentException("Trainee not found: " + traineeUsername);
+            throw new IllegalArgumentException("Trainee not found: " + request.getTraineeUsername());
         }
 
         // Remove existing trainer relationships
-        List<TraineeTrainer> existingRelations = traineeTrainerRepository.findAllByTraineeUsername(traineeUsername);
+        List<TraineeTrainer> existingRelations = traineeTrainerRepository.findAllByTraineeUsername(request.getTraineeUsername());
         traineeTrainerRepository.deleteAll(existingRelations);
-        LOG.info("Removed {} existing trainer relations for trainee {}", existingRelations.size(), traineeUsername);
+        LOG.info("Removed {} existing trainer relations for trainee {}", existingRelations.size(), request.getTraineeUsername());
         // Add new trainer relationships
-        List<TraineeTrainer> newRelations = trainerUsernames.stream()
+        List<TraineeTrainer> newRelations = request.getTrainerUsernames().stream()
                 .map(trainerUsername -> {
                     Trainer trainer = trainerService.getTrainerEntityByUsername(trainerUsername);
                     if (trainer == null) {
@@ -115,7 +116,7 @@ public class TraineeTrainerServiceImpl implements TraineeTrainerService {
                 .toList();
 
         traineeTrainerRepository.saveAll(newRelations);
-        LOG.info("Added {} new trainers for trainee {}", newRelations.size(), traineeUsername);
+        LOG.info("Added {} new trainers for trainee {}", newRelations.size(), request.getTraineeUsername());
 
         return newRelations.stream()
                 .filter(traineeTrainer -> traineeTrainer.getTrainee().equals(trainee))

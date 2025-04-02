@@ -1,4 +1,4 @@
-package com.epam.gym_crm.service_test;
+package com.epam.gym_crm.service;
 
 import com.epam.gym_crm.dto.response.TrainingTypeResponseDTO;
 import com.epam.gym_crm.entity.TrainingType;

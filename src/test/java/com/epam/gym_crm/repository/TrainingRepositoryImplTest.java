@@ -1,11 +1,11 @@
-package com.epam.gym_crm.repository_test;
+package com.epam.gym_crm.repository;
 
 import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.entity.Training;
 import com.epam.gym_crm.entity.TrainingType;
 import com.epam.gym_crm.entity.User;
-import com.epam.gym_crm.repository.repository_impl.TrainingRepositoryImpl;
+import com.epam.gym_crm.repository.impl.TrainingRepositoryImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.BeforeEach;

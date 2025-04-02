@@ -1,5 +1,6 @@
-package com.epam.gym_crm.service_test;
+package com.epam.gym_crm.service;
 
+import com.epam.gym_crm.dto.request.UpdateTrainerListRequestDTO;
 import com.epam.gym_crm.dto.response.TrainerSecureResponseDTO;
 import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.TraineeTrainer;
@@ -7,8 +8,6 @@ import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.entity.User;
 import com.epam.gym_crm.mapper.TrainerMapper;
 import com.epam.gym_crm.repository.TraineeTrainerRepository;
-import com.epam.gym_crm.service.TraineeService;
-import com.epam.gym_crm.service.TrainerService;
 import com.epam.gym_crm.service.impl.TraineeTrainerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -156,8 +155,8 @@ class TraineeTrainerServiceImplTest {
         when(traineeTrainerRepository.findAllByTraineeUsername("trainee.username")).thenReturn(existingRelations);
         when(trainerMapper.toTrainerSecureResponseDTO(trainer)).thenReturn(trainerResponseDTO);
 
-        List<TrainerSecureResponseDTO> result = traineeTrainerService.updateTraineeTrainers("trainee.username",
-                Collections.singletonList("trainer.username"));
+        List<TrainerSecureResponseDTO> result = traineeTrainerService.updateTraineeTrainers(new UpdateTrainerListRequestDTO("trainee.username",
+                Collections.singletonList("trainer.username")));
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -173,8 +172,8 @@ class TraineeTrainerServiceImplTest {
 
     @Test
     void testUpdateTraineeTrainers_InvalidTraineeUsername() {
-        assertThrows(IllegalArgumentException.class, () -> traineeTrainerService.updateTraineeTrainers(null, Collections.singletonList("trainer.username")));
-        assertThrows(IllegalArgumentException.class, () -> traineeTrainerService.updateTraineeTrainers("", Collections.singletonList("trainer.username")));
+        assertThrows(IllegalArgumentException.class, () -> traineeTrainerService.updateTraineeTrainers(new UpdateTrainerListRequestDTO(null, Collections.singletonList("trainer.username"))));
+        assertThrows(IllegalArgumentException.class, () -> traineeTrainerService.updateTraineeTrainers(new UpdateTrainerListRequestDTO("", Collections.singletonList("trainer.username"))));
 
         verify(traineeService, times(0)).getTraineeEntityByUsername(anyString());
         verify(trainerService, times(0)).getTrainerEntityByUsername(anyString());
@@ -185,7 +184,7 @@ class TraineeTrainerServiceImplTest {
 
     @Test
     void testUpdateTraineeTrainers_InvalidTrainerUsernames() {
-        assertThrows(IllegalArgumentException.class, () -> traineeTrainerService.updateTraineeTrainers("trainee.username", null));
+        assertThrows(IllegalArgumentException.class, () -> traineeTrainerService.updateTraineeTrainers(new UpdateTrainerListRequestDTO("trainee.username", null)));
 
         verify(traineeService, times(0)).getTraineeEntityByUsername(anyString());
         verify(trainerService, times(0)).getTrainerEntityByUsername(anyString());

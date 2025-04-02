@@ -46,7 +46,6 @@ dependencies {
 
     //Servlet API
     implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: servletVersion
-    implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
 
     // Jakarta annotations
     implementation group: 'jakarta.annotation', name: 'jakarta.annotation-api', version: jakartaAnnotationVersion
@@ -68,7 +67,6 @@ dependencies {
     implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: hibernateValidatorVersion
     implementation group: 'jakarta.validation', name: 'jakarta.validation-api', version: jakartaValidationVersion
     implementation group: 'org.glassfish', name: 'jakarta.el', version: elVersion
-    implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
 
     // PostgreSQL Driver
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion
@@ -119,11 +117,6 @@ dependencies {
 
     // Jayway JsonPath for MockMvc JSON assertions
     testImplementation group: 'com.jayway.jsonpath', name:'json-path', version: '2.9.0'
-
-    // Legacy compatability for swagger 2
-    implementation group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
-    implementation group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '2.0.0.RELEASE'
-    implementation group: 'org.springframework.plugin', name: 'spring-plugin-metadata', version: '2.0.0.RELEASE'
 
 }
 

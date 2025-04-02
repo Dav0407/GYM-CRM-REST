@@ -1,9 +1,9 @@
-package com.epam.gym_crm.repository_test;
+package com.epam.gym_crm.repository;
 
 import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.TraineeTrainer;
 import com.epam.gym_crm.entity.Trainer;
-import com.epam.gym_crm.repository.repository_impl.TraineeTrainerRepositoryImpl;
+import com.epam.gym_crm.repository.impl.TraineeTrainerRepositoryImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;

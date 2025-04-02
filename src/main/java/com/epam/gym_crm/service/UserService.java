@@ -1,5 +1,7 @@
 package com.epam.gym_crm.service;
 
+import com.epam.gym_crm.dto.request.ChangePasswordRequestDTO;
+import com.epam.gym_crm.dto.request.LogInRequestDTO;
 import com.epam.gym_crm.dto.response.UserResponseDTO;
 import com.epam.gym_crm.entity.User;
 
@@ -14,7 +16,7 @@ public interface UserService {
 
     User validateCredentials(String username, String password);
 
-    UserResponseDTO changePassword(String username, String oldPassword, String newPassword);
+    UserResponseDTO changePassword(ChangePasswordRequestDTO request);
 
     void updateStatus(String username);
 
@@ -22,5 +24,5 @@ public interface UserService {
 
     User getUserByUsername(String username);
 
-    UserResponseDTO login(String username, String password);
+    UserResponseDTO login(LogInRequestDTO request);
 }

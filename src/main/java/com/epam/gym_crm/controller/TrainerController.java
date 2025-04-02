@@ -38,7 +38,8 @@ public class TrainerController {
 
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TrainerResponseDTO> registerTrainer(@Valid @RequestBody CreateTrainerProfileRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(trainerService.createTrainerProfile(request));
+        TrainerResponseDTO response = trainerService.createTrainerProfile(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +47,8 @@ public class TrainerController {
                                                                        @RequestHeader(value = "Username") String headerUsername,
                                                                        @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.FOUND).body(trainerService.getTrainerByUsername(username));
+        TrainerProfileResponseDTO response = trainerService.getTrainerByUsername(username);
+        return ResponseEntity.status(HttpStatus.FOUND).body(response);
     }
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -54,7 +56,8 @@ public class TrainerController {
                                                                           @RequestHeader(value = "Username") String headerUsername,
                                                                           @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(trainerService.updateTrainerProfile(request));
+        TrainerProfileResponseDTO response = trainerService.updateTrainerProfile(request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @GetMapping(value = "/not-assigned/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,7 +65,8 @@ public class TrainerController {
                                                                                  @RequestHeader(value = "Username") String headerUsername,
                                                                                  @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.FOUND).body(trainerService.getNotAssignedTrainersByTraineeUsername(username));
+        List<TrainerSecureResponseDTO> response = trainerService.getNotAssignedTrainersByTraineeUsername(username);
+        return ResponseEntity.status(HttpStatus.FOUND).body(response);
     }
 
     @PutMapping(value = "/assign", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -70,7 +74,8 @@ public class TrainerController {
                                                                                      @RequestHeader(value = "Username") String headerUsername,
                                                                                      @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(traineeTrainerService.updateTraineeTrainers(request.getTraineeUsername(), request.getTrainerUsernames()));
+        List<TrainerSecureResponseDTO> response = traineeTrainerService.updateTraineeTrainers(request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @PatchMapping(value = "/{trainer-username}/status", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -79,6 +84,7 @@ public class TrainerController {
                                                                          @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
         trainerService.updateStatus(trainerUsername);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(trainerService.getTrainerByUsername(trainerUsername));
+        TrainerProfileResponseDTO response = trainerService.getTrainerByUsername(trainerUsername);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 }

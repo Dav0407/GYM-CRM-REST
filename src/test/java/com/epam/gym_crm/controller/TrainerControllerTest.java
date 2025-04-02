@@ -6,7 +6,14 @@ import com.epam.gym_crm.dto.request.UpdateTrainerProfileRequestDTO;
 import com.epam.gym_crm.dto.response.TrainerProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerSecureResponseDTO;
+import com.epam.gym_crm.entity.Trainee;
+import com.epam.gym_crm.entity.TraineeTrainer;
+import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.entity.User;
+import com.epam.gym_crm.mapper.TrainerMapper;
+import com.epam.gym_crm.repository.TraineeTrainerRepository;
+import com.epam.gym_crm.repository.TrainerRepository;
+import com.epam.gym_crm.service.TraineeService;
 import com.epam.gym_crm.service.TraineeTrainerService;
 import com.epam.gym_crm.service.TrainerService;
 import com.epam.gym_crm.service.UserService;
@@ -25,12 +32,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,6 +61,18 @@ public class TrainerControllerTest {
 
     @Mock
     private TraineeTrainerService traineeTrainerService;
+
+    @Mock
+    private TraineeService traineeService;
+
+    @Mock
+    private TrainerRepository trainerRepository;
+
+    @Mock
+    private TraineeTrainerRepository traineeTrainerRepository;
+
+    @Mock
+    private TrainerMapper trainerMapper;
 
     @InjectMocks
     private TrainerController trainerController;
@@ -175,21 +200,27 @@ public class TrainerControllerTest {
 
     @Test
     void updateTraineesTrainersList_ShouldReturnUpdatedList() throws Exception {
+        // Given
         UpdateTrainerListRequestDTO request = UpdateTrainerListRequestDTO.builder()
                 .traineeUsername("trainee.user")
                 .trainerUsernames(Arrays.asList("trainer1", "trainer2"))
                 .build();
 
+        // Create complete response objects with all required fields
         List<TrainerSecureResponseDTO> updatedTrainers = Arrays.asList(
                 TrainerSecureResponseDTO.builder()
+                        .id(1L)
                         .username("trainer1")
                         .firstName("Trainer")
                         .lastName("One")
+                        .specialization("Fitness")
                         .build(),
                 TrainerSecureResponseDTO.builder()
+                        .id(2L)
                         .username("trainer2")
                         .firstName("Trainer")
                         .lastName("Two")
+                        .specialization("Yoga")
                         .build()
         );
 
@@ -197,18 +228,30 @@ public class TrainerControllerTest {
         user.setUsername("trainee.user");
         user.setPassword("validPass");
 
+        // Mock the complete flow
         when(userService.validateCredentials("trainee.user", "validPass")).thenReturn(user);
-        when(traineeTrainerService.updateTraineeTrainers("trainee.user", request.getTrainerUsernames()))
-                .thenReturn(updatedTrainers);
 
+        // Use doReturn().when() for more reliable stubbing
+        doReturn(updatedTrainers).when(traineeTrainerService).updateTraineeTrainers(any(UpdateTrainerListRequestDTO.class));
+
+        // When/Then
         mockMvc.perform(put("/api/v1/trainers/assign")
                         .header("Username", "trainee.user")
                         .header("Password", "validPass")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andDo(print()) // Add this to print the response for debugging
                 .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$[0].username").value("trainer1"))
-                .andExpect(jsonPath("$[1].username").value("trainer2"));
+                .andExpect(jsonPath("$[0].firstName").value("Trainer"))
+                .andExpect(jsonPath("$[0].lastName").value("One"))
+                .andExpect(jsonPath("$[1].username").value("trainer2"))
+                .andExpect(jsonPath("$[1].firstName").value("Trainer"))
+                .andExpect(jsonPath("$[1].lastName").value("Two"));
+
+        // Verify interactions
+        verify(userService).validateCredentials("trainee.user", "validPass");
+        verify(traineeTrainerService).updateTraineeTrainers(any(UpdateTrainerListRequestDTO.class));
     }
 
     @Test

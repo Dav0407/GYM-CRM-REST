@@ -6,6 +6,7 @@ import com.epam.gym_crm.exception.InvalidUserCredentialException;
 import com.epam.gym_crm.exception.UserNotFoundException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
@@ -26,7 +27,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleValidationExceptions(MethodArgumentNotValidException exception) {
-
         LOG.error("MethodArgumentNotValidException: ", exception);
 
         Map<String, String> errors = new HashMap<>();
@@ -34,39 +34,38 @@ public class GlobalExceptionHandler {
                 errors.put(error.getField(), error.getDefaultMessage())
         );
 
-        return ResponseEntity.status(VALIDATION_FAILED.getHttpStatus()).body(
-                ExceptionResponse.builder()
-                        .businessErrorCode(VALIDATION_FAILED.getCode())
-                        .businessErrorDescription(VALIDATION_FAILED.getDescription())
-                        .errorMessage("One or more fields are invalid.")
-                        .validationErrors(errors)
-                        .build()
+        return createExceptionResponse(
+                VALIDATION_FAILED.getHttpStatus(),
+                VALIDATION_FAILED.getCode(),
+                VALIDATION_FAILED.getDescription(),
+                "One or more fields are invalid.",
+                errors
         );
     }
 
     @ExceptionHandler(InvalidUserCredentialException.class)
     public ResponseEntity<ExceptionResponse> handleInvalidUserCredentialException(InvalidUserCredentialException exception) {
-
         LOG.error("InvalidUserCredentialException: ", exception);
 
-        return ResponseEntity.status(USER_UNAUTHORIZED.getCode()).body(
-                ExceptionResponse.builder()
-                        .businessErrorCode(USER_UNAUTHORIZED.getCode())
-                        .businessErrorDescription(USER_UNAUTHORIZED.getDescription())
-                        .errorMessage(exception.getMessage())
-                        .build());
+        return createExceptionResponse(
+                USER_UNAUTHORIZED.getHttpStatus(),
+                USER_UNAUTHORIZED.getCode(),
+                USER_UNAUTHORIZED.getDescription(),
+                exception.getMessage(),
+                null
+        );
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ExceptionResponse> handleInvalidPasswordException(InvalidPasswordException exception) {
         LOG.error("InvalidPasswordException: ", exception);
 
-        return ResponseEntity.status(VALIDATION_FAILED.getHttpStatus()).body(
-                ExceptionResponse.builder()
-                        .businessErrorCode(VALIDATION_FAILED.getCode())
-                        .businessErrorDescription(VALIDATION_FAILED.getDescription())
-                        .errorMessage(exception.getMessage())
-                        .build()
+        return createExceptionResponse(
+                VALIDATION_FAILED.getHttpStatus(),
+                VALIDATION_FAILED.getCode(),
+                VALIDATION_FAILED.getDescription(),
+                exception.getMessage(),
+                null
         );
     }
 
@@ -74,44 +73,69 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleUserNotFoundException(UserNotFoundException exception) {
         LOG.error("UserNotFoundException: ", exception);
 
-        return ResponseEntity.status(USER_UNAUTHORIZED.getHttpStatus()).body(
-                ExceptionResponse.builder()
-                        .businessErrorCode(USER_UNAUTHORIZED.getCode())
-                        .businessErrorDescription(USER_UNAUTHORIZED.getDescription())
-                        .errorMessage(exception.getMessage())
-                        .build()
+        return createExceptionResponse(
+                USER_UNAUTHORIZED.getHttpStatus(),
+                USER_UNAUTHORIZED.getCode(),
+                USER_UNAUTHORIZED.getDescription(),
+                exception.getMessage(),
+                null
         );
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ExceptionResponse> handleMissingRequestHeaderException(MissingRequestHeaderException exception) {
-
         LOG.error("MissingRequestHeaderException: ", exception);
 
-        return ResponseEntity
-                .status(USER_UNAUTHORIZED.getHttpStatus())
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorCode(USER_UNAUTHORIZED.getCode())
-                                .businessErrorDescription(USER_UNAUTHORIZED.getDescription())
-                                .errorMessage(exception.getMessage())
-                                .build()
-                );
+        String errorMessage = String.format("Required header '%s' is missing", exception.getHeaderName());
+
+        return createExceptionResponse(
+                USER_UNAUTHORIZED.getHttpStatus(),
+                USER_UNAUTHORIZED.getCode(),
+                USER_UNAUTHORIZED.getDescription(),
+                errorMessage,
+                null
+        );
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleException(Exception exception) {
-
         LOG.error("An exception occurred: ", exception);
 
-        return ResponseEntity
-                .status(INTERNAL_ERROR.getHttpStatus())
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorCode(INTERNAL_ERROR.getCode())
-                                .businessErrorDescription(INTERNAL_ERROR.getDescription())
-                                .errorMessage(exception.getMessage())
-                                .build()
-                );
+        return createExceptionResponse(
+                INTERNAL_ERROR.getHttpStatus(),
+                INTERNAL_ERROR.getCode(),
+                INTERNAL_ERROR.getDescription(),
+                exception.getMessage(),
+                null
+        );
+    }
+
+    /**
+     * Creates a standardized exception response entity.
+     *
+     * @param httpStatus              HTTP status for the response
+     * @param businessErrorCode       Business error code
+     * @param businessErrorDescription Business error description
+     * @param errorMessage            Error message
+     * @param validationErrors        Optional map of field validation errors
+     * @return ResponseEntity with constructed ExceptionResponse
+     */
+    private ResponseEntity<ExceptionResponse> createExceptionResponse(
+            HttpStatus httpStatus,
+            int businessErrorCode,
+            String businessErrorDescription,
+            String errorMessage,
+            Map<String, String> validationErrors) {
+
+        ExceptionResponse.ExceptionResponseBuilder responseBuilder = ExceptionResponse.builder()
+                .businessErrorCode(businessErrorCode)
+                .businessErrorDescription(businessErrorDescription)
+                .errorMessage(errorMessage);
+
+        if (validationErrors != null) {
+            responseBuilder.validationErrors(validationErrors);
+        }
+
+        return ResponseEntity.status(httpStatus).body(responseBuilder.build());
     }
 }

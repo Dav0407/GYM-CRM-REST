@@ -1,5 +1,6 @@
-package com.epam.gym_crm.service_test;
+package com.epam.gym_crm.service;
 
+import com.epam.gym_crm.dto.request.ChangePasswordRequestDTO;
 import com.epam.gym_crm.dto.response.UserResponseDTO;
 import com.epam.gym_crm.entity.User;
 import com.epam.gym_crm.exception.InvalidPasswordException;
@@ -112,7 +113,7 @@ public class UserServiceImplTest {
 
         when(userMapper.toUserResponseDTO(user)).thenReturn(expectedResponse);
 
-        UserResponseDTO userResponseDTO = userService.changePassword("john.doe", "password123", "newpassword");
+        UserResponseDTO userResponseDTO = userService.changePassword(new ChangePasswordRequestDTO("john.doe", "password123", "newpassword"));
 
         assertNotNull(userResponseDTO);
         assertEquals("john.doe", userResponseDTO.getUsername());
@@ -127,7 +128,7 @@ public class UserServiceImplTest {
     void testChangePasswordWithIncorrectOldPassword() {
         when(userRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
 
-        assertThrows(InvalidPasswordException.class, () -> userService.changePassword("john.doe", "wrongpassword", "newpassword"));
+        assertThrows(InvalidPasswordException.class, () -> userService.changePassword(new ChangePasswordRequestDTO("john.doe", "wrongpassword", "newpassword")));
 
         verify(userRepository, never()).updatePassword(anyString(), anyString());
     }

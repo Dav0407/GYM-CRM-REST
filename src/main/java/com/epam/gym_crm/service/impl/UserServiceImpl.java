@@ -1,5 +1,7 @@
 package com.epam.gym_crm.service.impl;
 
+import com.epam.gym_crm.dto.request.ChangePasswordRequestDTO;
+import com.epam.gym_crm.dto.request.LogInRequestDTO;
 import com.epam.gym_crm.dto.response.UserResponseDTO;
 import com.epam.gym_crm.entity.User;
 import com.epam.gym_crm.exception.InvalidPasswordException;
@@ -63,20 +65,20 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserResponseDTO changePassword(String username, String oldPassword, String newPassword) {
-        User user = userRepository.findByUsername(username)
+    public UserResponseDTO changePassword(ChangePasswordRequestDTO request) {
+        User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> {
-                    LOG.warn("User not found: {}", username);
+                    LOG.warn("User not found: {}", request.getUsername());
                     return new UserNotFoundException("User not found.");
                 });
 
-        if (!user.getPassword().equals(oldPassword)) {
-            LOG.error("Old password does not match for {}", username);
+        if (!user.getPassword().equals(request.getOldPassword())) {
+            LOG.error("Old password does not match for {}", request.getUsername());
             throw new InvalidPasswordException("Old password is incorrect.");
         }
 
-        user.setPassword(newPassword);
-        LOG.info("Password successfully changed for {}", username);
+        user.setPassword(request.getNewPassword());
+        LOG.info("Password successfully changed for {}", request.getUsername());
 
         return userMapper.toUserResponseDTO(user);
     }
@@ -150,9 +152,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO login(String username, String password) {
+    public UserResponseDTO login(LogInRequestDTO request) {
 
-        User user = validateCredentials(username, password);
+        User user = validateCredentials(request.getUsername(), request.getPassword());
 
         return userMapper.toUserResponseDTO(user);
     }

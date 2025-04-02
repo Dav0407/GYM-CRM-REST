@@ -1,4 +1,4 @@
-package com.epam.gym_crm.repository.repository_impl;
+package com.epam.gym_crm.repository.impl;
 
 import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.repository.TrainerRepository;

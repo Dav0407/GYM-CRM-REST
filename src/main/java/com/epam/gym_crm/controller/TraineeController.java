@@ -35,7 +35,8 @@ public class TraineeController {
 
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TraineeResponseDTO> registerTrainee(@Valid @RequestBody CreateTraineeProfileRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(traineeService.createTraineeProfile(request));
+        TraineeResponseDTO response = traineeService.createTraineeProfile(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,7 +45,8 @@ public class TraineeController {
                                                                        @RequestHeader(value = "Password") String headerPassword) {
 
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.FOUND).body(traineeService.getTraineeByUsername(username));
+        TraineeProfileResponseDTO response = traineeService.getTraineeByUsername(username);
+        return ResponseEntity.status(HttpStatus.FOUND).body(response);
     }
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -52,7 +54,8 @@ public class TraineeController {
                                                                           @RequestHeader(value = "Username") String headerUsername,
                                                                           @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(traineeService.updateTraineeProfile(request));
+        TraineeProfileResponseDTO response = traineeService.updateTraineeProfile(request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @DeleteMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +63,8 @@ public class TraineeController {
                                                                           @RequestHeader(value = "Username") String headerUsername,
                                                                           @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(traineeService.deleteTraineeProfileByUsername(username));
+        TraineeProfileResponseDTO response = traineeService.deleteTraineeProfileByUsername(username);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @PatchMapping(value = "/{trainee-username}/status", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +73,8 @@ public class TraineeController {
                                                                          @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
         traineeService.updateStatus(traineeUsername);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(traineeService.getTraineeByUsername(traineeUsername));
+        TraineeProfileResponseDTO response = traineeService.getTraineeByUsername(traineeUsername);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 }
 

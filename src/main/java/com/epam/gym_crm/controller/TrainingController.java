@@ -38,7 +38,8 @@ public class TrainingController {
                                                            @RequestHeader(value = "Username") String headerUsername,
                                                            @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.CREATED).body(trainingService.addTraining(request));
+        TrainingResponseDTO response = trainingService.addTraining(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping(value = "/trainees", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +47,8 @@ public class TrainingController {
                                                                                 @RequestHeader(value = "Username") String headerUsername,
                                                                                 @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.FOUND).body(trainingService.getTraineeTrainings(request));
+        List<TraineeTrainingResponseDTO> response = trainingService.getTraineeTrainings(request);
+        return ResponseEntity.status(HttpStatus.FOUND).body(response);
     }
 
     @GetMapping(value = "/trainers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -54,13 +56,15 @@ public class TrainingController {
                                                                                 @RequestHeader(value = "Username") String headerUsername,
                                                                                 @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.FOUND).body(trainingService.getTrainerTrainings(request));
+        List<TrainerTrainingResponseDTO> response = trainingService.getTrainerTrainings(request);
+        return ResponseEntity.status(HttpStatus.FOUND).body(response);
     }
 
     @GetMapping(value = "/types", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<TrainingTypeResponseDTO>> getTrainingTypes(@RequestHeader(value = "Username") String headerUsername,
                                                                           @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
-        return ResponseEntity.status(HttpStatus.FOUND).body(trainingTypeService.getAllTrainingTypes());
+        List<TrainingTypeResponseDTO> response = trainingTypeService.getAllTrainingTypes();
+        return ResponseEntity.status(HttpStatus.FOUND).body(response);
     }
 }

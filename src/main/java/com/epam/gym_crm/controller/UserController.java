@@ -9,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,11 +26,16 @@ public class UserController {
 
     @GetMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponseDTO> logIn(@Valid @RequestBody LogInRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.login(request.getUsername(), request.getPassword()));
+        UserResponseDTO response = userService.login(request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PutMapping(value = "/change-password", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserResponseDTO> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.changePassword(request.getUsername(), request.getOldPassword(), request.getNewPassword()));
+    public ResponseEntity<UserResponseDTO> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request,
+                                                          @RequestHeader(value = "Username") String headerUsername,
+                                                          @RequestHeader(value = "Password") String headerPassword) throws MissingRequestHeaderException {
+        userService.validateCredentials(headerUsername, headerPassword);
+        UserResponseDTO response = userService.changePassword(request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 }

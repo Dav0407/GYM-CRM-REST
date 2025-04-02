@@ -1,4 +1,4 @@
-package com.epam.gym_crm.service_test;
+package com.epam.gym_crm.service;
 
 import com.epam.gym_crm.dto.request.CreateTraineeProfileRequestDTO;
 import com.epam.gym_crm.dto.request.UpdateTraineeProfileRequestDTO;
@@ -8,7 +8,6 @@ import com.epam.gym_crm.entity.Trainee;
 import com.epam.gym_crm.entity.User;
 import com.epam.gym_crm.mapper.TraineeMapper;
 import com.epam.gym_crm.repository.TraineeRepository;
-import com.epam.gym_crm.service.UserService;
 import com.epam.gym_crm.service.impl.TraineeServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
