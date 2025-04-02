@@ -33,7 +33,7 @@ public class UserController {
     @PutMapping(value = "/change-password", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponseDTO> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request,
                                                           @RequestHeader(value = "Username") String headerUsername,
-                                                          @RequestHeader(value = "Password") String headerPassword) throws MissingRequestHeaderException {
+                                                          @RequestHeader(value = "Password") String headerPassword) {
         userService.validateCredentials(headerUsername, headerPassword);
         UserResponseDTO response = userService.changePassword(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);

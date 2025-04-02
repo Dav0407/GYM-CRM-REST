@@ -6,9 +6,6 @@ import com.epam.gym_crm.dto.request.UpdateTrainerProfileRequestDTO;
 import com.epam.gym_crm.dto.response.TrainerProfileResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerResponseDTO;
 import com.epam.gym_crm.dto.response.TrainerSecureResponseDTO;
-import com.epam.gym_crm.entity.Trainee;
-import com.epam.gym_crm.entity.TraineeTrainer;
-import com.epam.gym_crm.entity.Trainer;
 import com.epam.gym_crm.entity.User;
 import com.epam.gym_crm.mapper.TrainerMapper;
 import com.epam.gym_crm.repository.TraineeTrainerRepository;
@@ -32,11 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,18 +55,6 @@ public class TrainerControllerTest {
 
     @Mock
     private TraineeTrainerService traineeTrainerService;
-
-    @Mock
-    private TraineeService traineeService;
-
-    @Mock
-    private TrainerRepository trainerRepository;
-
-    @Mock
-    private TraineeTrainerRepository traineeTrainerRepository;
-
-    @Mock
-    private TrainerMapper trainerMapper;
 
     @InjectMocks
     private TrainerController trainerController;

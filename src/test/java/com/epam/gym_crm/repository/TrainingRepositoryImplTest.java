@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -151,7 +152,7 @@ public class TrainingRepositoryImplTest {
         // Mock TypedQuery
         TypedQuery<Training> mockedQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(anyString(), eq(Training.class))).thenReturn(mockedQuery);
-        when(mockedQuery.getResultList()).thenReturn(Arrays.asList(training));
+        when(mockedQuery.getResultList()).thenReturn(Collections.singletonList(training));
 
         // Act
         List<Training> trainings = trainingRepository.findAllTraineeTrainings(
@@ -179,7 +180,7 @@ public class TrainingRepositoryImplTest {
         // Mock TypedQuery
         TypedQuery<Training> mockedQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(anyString(), eq(Training.class))).thenReturn(mockedQuery);
-        when(mockedQuery.getResultList()).thenReturn(Arrays.asList(training));
+        when(mockedQuery.getResultList()).thenReturn(Collections.singletonList(training));
 
         // Act
         List<Training> trainings = trainingRepository.findAllTrainerTrainings(
